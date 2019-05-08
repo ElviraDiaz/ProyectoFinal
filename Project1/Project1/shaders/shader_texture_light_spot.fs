@@ -51,7 +51,8 @@ void main()
         
         // attenuation
         float distance    = length(light.position - FragPos);
-        float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
+        float attenuation = 5.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+        //Aumentar el numerador de "attenuation" para que la luz sea más brillante, disminuirlo para opacarla
 
         // ambient  *= attenuation; // remove attenuation from ambient, as otherwise at large distances the light would be darker inside than outside the spotlight due the ambient term in the else branche
         diffuse   *= attenuation;
