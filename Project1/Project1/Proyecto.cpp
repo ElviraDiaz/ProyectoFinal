@@ -2624,8 +2624,8 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 
 	//  ------------- Soportes de los Anillos -------------
 
-	lightingShader.setInt("material_diffuse", t_azul);          //Texturas de la estructura
-	lightingShader.setInt("material_specular", t_azul_brillo);
+	lightingShader.setInt("material_diffuse", t_metal);          //Texturas de la estructura
+	lightingShader.setInt("material_specular", t_metal_brillo);
 
 	// --- Soportes Frontales ---
 	// 1
@@ -2824,7 +2824,103 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	glDrawArrays(GL_QUADS, 24, 48);
 	glDrawArrays(GL_POLYGON, 72, 12);
 	glDrawArrays(GL_POLYGON, 84, 12);
+	
 
+	//  ------------- Soportes de la Base -------------
 	
-	
+	// -- Soportes Frontales ---
+
+	// Soporte Izquierdo
+	model = glm::translate(model_loc, glm::vec3(-6.0f, -10.5f, 1.0f));
+	model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Soporte Derecho
+	model = glm::translate(model_loc, glm::vec3(6.0f, -10.5f, 1.0f));
+	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	//Unión Soporte-Piso Izquierdo
+	model = glm::translate(model_loc, glm::vec3(-11.75f, -20.75f, 1.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	//Unión Soporte-Piso Derecho
+	model = glm::translate(model_loc, glm::vec3(11.75f, -20.75f, 1.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// -- Soportes Traseros ---
+
+	// Soporte Izquierdo
+	model = glm::translate(model_loc, glm::vec3(-6.0f, -10.5f, -11.0f));
+	model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Soporte Derecho
+	model = glm::translate(model_loc, glm::vec3(6.0f, -10.5f, -11.0f));
+	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	//Unión Soporte-Piso Izquierdo
+	model = glm::translate(model_loc, glm::vec3(-11.75f, -20.75f, -11.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	//Unión Soporte-Piso Derecho
+	model = glm::translate(model_loc, glm::vec3(11.75f, -20.75f, -11.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+
+	// ------------- Piso -------------
+
+	model = glm::translate(model_loc, glm::vec3(0.0f, -21.5f, -5.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(40.0f, 1.0f, 16.0f));
+
+	lightingShader.setMat4("model", model);
+	lightingShader.setInt("material_diffuse", t_terracota);          //Textura del piso
+	lightingShader.setInt("material_specular", t_terracota_brillo);
+	glDrawArrays(GL_QUADS, 0, 24);
 }

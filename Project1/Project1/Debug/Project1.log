@@ -1,11 +1,6 @@
-﻿  esfera.cpp
-c:\users\belem\desktop\proyectofinal\project1\project1\esfera.cpp(23): warning C4305: '=': truncamiento de 'double' a 'GLfloat'
-c:\users\belem\desktop\proyectofinal\project1\project1\esfera.cpp(27): warning C4305: '=': truncamiento de 'double' a 'GLfloat'
-  Proyecto.cpp
-c:\users\belem\desktop\proyectofinal\project1\project1\proyecto.cpp(965): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-c:\users\belem\desktop\proyectofinal\project1\project1\proyecto.cpp(972): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-  Generando código...
-  LINK : no se encontró C:\Users\Belem\Desktop\ProyectoFinal\Project1\Debug\Project1.exe o no lo generó el último vínculo incremental; ejecutando vínculo completo
+﻿  Proyecto.cpp
+c:\users\belem\desktop\proyectofinal\project1\project1\proyecto.cpp(957): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+c:\users\belem\desktop\proyectofinal\project1\project1\proyecto.cpp(964): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
 LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
 soil2-debug.lib(etc1_utils.obj) : warning LNK4099: no se encontró PDB 'soil2-debug.pdb' con 'soil2-debug.lib(etc1_utils.obj)' o en 'C:\Users\Belem\Desktop\ProyectoFinal\Project1\Debug\soil2-debug.pdb'; se vinculará el objeto sin tener en cuenta información de depuración
 soil2-debug.lib(image_DXT.obj) : warning LNK4099: no se encontró PDB 'soil2-debug.pdb' con 'soil2-debug.lib(image_DXT.obj)' o en 'C:\Users\Belem\Desktop\ProyectoFinal\Project1\Debug\soil2-debug.pdb'; se vinculará el objeto sin tener en cuenta información de depuración
