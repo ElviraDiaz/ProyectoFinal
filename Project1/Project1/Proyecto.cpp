@@ -118,7 +118,14 @@ float	movX = 0.0f,
 		rotX = 0.0f;
 
 // Variables para la animación
+<<<<<<< HEAD
+float giroSilla = 0.0f;    //Ángulo de giro de las sillas de la montaña rusa
+int giroSillaInversa = 0;  //Sentido de giro de las sillas de la montaña rusa
+
+float giroRueda = 0.0f;    //Ángulo de giro de la rueda de la fortuna
+=======
 float giroRueda = 0.0f;
+>>>>>>> 3e32d8652ead2d170e4ffeda0c30c1f5ba92cb91
 
 // Para controlar la intensidad de la luz
 int CeroPresionado = 0;
@@ -696,7 +703,32 @@ void myData()
 
 void animate(void)
 {
+<<<<<<< HEAD
+	// --------------- Animación Rueda de la Fortuna ---------------
+
+	giroRueda += 1.0f;     //Giro en sentido antihorario
+
+
+	// --------------- Animación de la Montaña Rusa ---------------
+
+	if (giroSillaInversa)  //Giro en sentido horario
+	{
+		giroSilla -= 6.0f;
+
+		if (giroSilla <= 0.0f)
+			giroSillaInversa = 0;
+	}
+	else                  //Giro en sentido antihorario
+	{
+		giroSilla += 6.0f;
+
+		if (giroSilla >= 1080.0f)  //3 vueltas: 360 * 3 = 1080
+			giroSillaInversa = 1;
+	}
+
+=======
 	giroRueda += 1.0f;
+>>>>>>> 3e32d8652ead2d170e4ffeda0c30c1f5ba92cb91
 }
 
 void display(Shader modelShader, Model batarang)
@@ -1255,68 +1287,76 @@ void montañaRusa(glm::mat4 model_loc, Shader lightingShader, Shader modelShader,
 	// ------------ Sillas del Carro  ------------
 
 	// Frontal Izquierda 1
-	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_diffuse", t_azul);         //Texturas de la silla
 	lightingShader.setInt("material_specular", t_azul_brillo);
-	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, 2.325f));        //Ubicación de la silla sobre el carro
-	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
-	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, -1, 1, lightingShader);                                             //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+
+	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, 2.325f));           //Ubicación de la silla sobre el carro
+	model = glm::rotate(model, glm::radians(giroSilla), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de giro
+	model = glm::scale(model, glm::vec3(0.40f));                                        //Escalado de la silla
+	silla(model, -1, 1, lightingShader);                                                //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Frontal Izquierda 2
-	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_diffuse", t_azul);         //Texturas de la silla
 	lightingShader.setInt("material_specular", t_azul_brillo);
-	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, 3.35f));         //Ubicación de la silla sobre el carro
-	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
-	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 0, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+
+	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, 3.35f));            //Ubicación de la silla sobre el carro
+	model = glm::rotate(model, glm::radians(giroSilla), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de giro
+	model = glm::scale(model, glm::vec3(0.40f));                                        //Escalado de la silla
+	silla(model, 0, 1, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Frontal Derecha 1
-	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_diffuse", t_azul);         //Texturas de la silla
 	lightingShader.setInt("material_specular", t_azul_brillo);
-	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, -2.325f));       //Ubicación de la silla sobre el carro
-	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
-	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 1, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+
+	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, -2.325f));          //Ubicación de la silla sobre el carro
+	model = glm::rotate(model, glm::radians(giroSilla), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de giro
+	model = glm::scale(model, glm::vec3(0.40f));                                        //Escalado de la silla
+	silla(model, 1, 1, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Frontal Derecha 2
-	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_diffuse", t_azul);         //Texturas de la silla
 	lightingShader.setInt("material_specular", t_azul_brillo);
-	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, -3.35f));        //Ubicación de la silla sobre el carro
-	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
-	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 0, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+
+	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, -3.35f));           //Ubicación de la silla sobre el carro
+	model = glm::rotate(model, glm::radians(giroSilla), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de giro
+	model = glm::scale(model, glm::vec3(0.40f));                                        //Escalado de la silla
+	silla(model, 0, 1, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Trasera Izquierda 1
-	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_diffuse", t_azul);         //Texturas de la silla
 	lightingShader.setInt("material_specular", t_azul_brillo);
-	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, 2.325f));         //Ubicación de la silla sobre el carro
-	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
-	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, -1, 1, lightingShader);                                             //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+
+	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, 2.325f));            //Ubicación de la silla sobre el carro
+	model = glm::rotate(model, glm::radians(giroSilla), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de giro
+	model = glm::scale(model, glm::vec3(0.40f));                                        //Escalado de la silla
+	silla(model, -1, 1, lightingShader);                                                //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Trasera Izquierda 2
-	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_diffuse", t_azul);         //Texturas de la silla
 	lightingShader.setInt("material_specular", t_azul_brillo);
-	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, 3.35f));          //Ubicación de la silla sobre el carro
-	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
-	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 0, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
-	// Trasera Izquierda 1
-	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
-	lightingShader.setInt("material_specular", t_azul_brillo);
-	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, -2.325f));        //Ubicación de la silla sobre el carro
-	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
-	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 1, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, 3.35f));             //Ubicación de la silla sobre el carro
+	model = glm::rotate(model, glm::radians(giroSilla), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de giro
+	model = glm::scale(model, glm::vec3(0.40f));                                        //Escalado de la silla
+	silla(model, 0, 1, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
-	// Trasera Izquierda 2
-	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	// Trasera Derecha 1
+	lightingShader.setInt("material_diffuse", t_azul);         //Texturas de la silla
 	lightingShader.setInt("material_specular", t_azul_brillo);
-	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, -3.35f));         //Ubicación de la silla sobre el carro
-	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
-	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 0, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+
+	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, -2.325f));           //Ubicación de la silla sobre el carro
+	model = glm::rotate(model, glm::radians(giroSilla), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de giro
+	model = glm::scale(model, glm::vec3(0.40f));                                        //Escalado de la silla
+	silla(model, 1, 1, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+
+	// Trasera Derecha 2
+	lightingShader.setInt("material_diffuse", t_azul);         //Texturas de la silla
+	lightingShader.setInt("material_specular", t_azul_brillo);
+
+	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, -3.35f));            //Ubicación de la silla sobre el carro
+	model = glm::rotate(model, glm::radians(giroSilla), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de giro
+	model = glm::scale(model, glm::vec3(0.40f));                                        //Escalado de la silla
+	silla(model, 0, 1, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 
 	//  ------------- Bases de los Rieles -------------
