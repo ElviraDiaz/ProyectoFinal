@@ -71,11 +71,16 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void montañaRusa(glm::mat4 model_loc, Shader lightingShader, Shader modelShader, Model logo);
 void riel(glm::mat4 model_loc, float escala_x, float rotacion, Shader lightingShader);
 void carro(glm::mat4 model_loc, Shader lightingShader);
-void silla(glm::mat4 model_loc, int lado, Shader lightingShader);
+void silla(glm::mat4 model_loc, int lado, int seguridad, Shader lightingShader);
 
 void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader);
+void cupula(glm::mat4 model_loc, Shader lightingShader);
+void anillo(glm::mat4 model_loc, Shader lightingShader);
 
 
+GLclampf bgColorRed   = 1.0;  //Color de fondo (Rojo)
+GLclampf bgColorGreen = 1.0;  //Color de fondo (Verde)
+GLclampf bgColorBlue  = 1.0;  //Color de fondo (Azul)
 
 // settings
 // Window size
@@ -95,9 +100,9 @@ bool firstMouse = true;
 double	deltaTime = 0.0f,
 		lastFrame = 0.0f;
 
-//Lighting                                     //Luz tipo Reflector
-glm::vec3 lightPosition(4.0f, 20.0f, 8.0f);    //Posición de la Luz. Original: (0.0f, 3.0f, 0.0f)
-glm::vec3 lightDirection(0.0f, 0.0f, -3.0f);   //Dirección de la Luz
+//Lighting                                       //Luz tipo Posicional
+glm::vec3 lightPosition(20.0f, 50.0f, 25.0f);    //Posición de la Luz. Original: (0.0f, 3.0f, 0.0f)
+glm::vec3 lightDirection(0.0f, 0.0f, -3.0f);     //Dirección de la Luz
 
 void myData(void);
 void display(Shader, Model);
@@ -689,19 +694,20 @@ void display(Shader modelShader, Model batarang)
 	// ------------ Rueda de la Fortuna  ------------
 	glBindVertexArray(VAO);
 	lightingShader.use();
-	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 10.0f, 0.0f));  //Ubicación de la rueda de la fortuna
+	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 10.0f, -1.5f));  //Ubicación de la rueda de la fortuna
 	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));            //Escala de toda la rueda
 	ruedaDeLaFortuna(model_loc, lightingShader);                               //Se dibuja la rueda
 
 	/*
 	// Wea
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(40.0f, 10.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 0.1f));
+	model = glm::translate(glm::mat4(1.0f), glm::vec3(35.0f, 12.5f, -5.0f));
+	model = glm::scale(model, glm::vec3(2.9f, 1.25f, 2.9f));
 	lightingShader.setMat4("model", model);
-	lightingShader.setInt("material_diffuse", t_amarillo);
-	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	lightingShader.setInt("material_diffuse", t_azul);
+	lightingShader.setInt("material_specular", t_azul_brillo);
 	esfera.render();
 	*/
+	
 
 	// ------------- Luz ---------------
 	lampShader.use();
@@ -781,7 +787,7 @@ int main()
 
         // render
         // Backgound color
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClearColor(bgColorRed, bgColorGreen, bgColorBlue, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//Mi función de dibujo
@@ -830,6 +836,11 @@ void my_input(GLFWwindow *window)
 		Light_Position = lightPosition;
 
 		Luz_Reflector = 0;  //La luz ya no es de tipo reflector
+
+		//Se cambia el color de fondo (Día)
+		bgColorRed   = 1.0f;
+		bgColorGreen = 1.0f;
+		bgColorBlue  = 1.0f;
 	}
 
 	// Luz de Reflector
@@ -839,6 +850,11 @@ void my_input(GLFWwindow *window)
 		strcpy_s(Light_FragShader, "shaders/shader_texture_light_spot.fs");
 
 		Luz_Reflector = 1;  //La luz es de tipo reflector
+
+		//Se cambia el color de fondo (Noche)
+		bgColorRed   = 0.0f;
+		bgColorGreen = 0.0f;
+		bgColorBlue  = 0.0f;
 	}
 
 	// Luz Direccional
@@ -849,6 +865,11 @@ void my_input(GLFWwindow *window)
 		Light_Direction = lightDirection;
 
 		Luz_Reflector = 0;   //La luz ya no es de tipo reflector
+
+		//Se cambia el color de fondo (Día)
+		bgColorRed   = 1.0f;
+		bgColorGreen = 1.0f;
+		bgColorBlue  = 1.0f;
 	}
 
 
@@ -1132,52 +1153,68 @@ void montañaRusa(glm::mat4 model_loc, Shader lightingShader, Shader modelShader,
 	// ------------ Sillas del Carro  ------------
 
 	// Frontal Izquierda 1
+	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_specular", t_azul_brillo);
 	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, 2.325f));        //Ubicación de la silla sobre el carro
 	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
 	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, -1, lightingShader);                                                //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+	silla(model, -1, 1, lightingShader);                                             //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Frontal Izquierda 2
+	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_specular", t_azul_brillo);
 	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, 3.35f));         //Ubicación de la silla sobre el carro
 	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
 	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 0, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+	silla(model, 0, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Frontal Derecha 1
+	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_specular", t_azul_brillo);
 	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, -2.325f));       //Ubicación de la silla sobre el carro
 	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
 	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 1, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+	silla(model, 1, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Frontal Derecha 2
+	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_specular", t_azul_brillo);
 	model = glm::translate(ubicacion_carro, glm::vec3(-1.25f, 0.0f, -3.35f));        //Ubicación de la silla sobre el carro
 	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
 	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 0, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+	silla(model, 0, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Trasera Izquierda 1
+	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_specular", t_azul_brillo);
 	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, 2.325f));         //Ubicación de la silla sobre el carro
 	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
 	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, -1, lightingShader);                                                //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+	silla(model, -1, 1, lightingShader);                                             //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Trasera Izquierda 2
+	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_specular", t_azul_brillo);
 	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, 3.35f));          //Ubicación de la silla sobre el carro
 	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
 	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 0, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+	silla(model, 0, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Trasera Izquierda 1
+	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_specular", t_azul_brillo);
 	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, -2.325f));        //Ubicación de la silla sobre el carro
 	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
 	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 1, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+	silla(model, 1, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 	// Trasera Izquierda 2
+	lightingShader.setInt("material_diffuse", t_azul);                               //Texturas de la silla
+	lightingShader.setInt("material_specular", t_azul_brillo);
 	model = glm::translate(ubicacion_carro, glm::vec3(1.25f, 0.0f, -3.35f));         //Ubicación de la silla sobre el carro
 	//model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
 	model = glm::scale(model, glm::vec3(0.40f));                                     //Escalado de la silla
-	silla(model, 0, lightingShader);                                                 //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+	silla(model, 0, 1, lightingShader);                                              //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
 
 
 	//  ------------- Bases de los Rieles -------------
@@ -2173,7 +2210,7 @@ void carro(glm::mat4 model_loc, Shader lightingShader)
 	glDrawArrays(GL_QUADS, 24, 48);
 }
 
-void silla(glm::mat4 model_loc, int lado, Shader lightingShader)
+void silla(glm::mat4 model_loc, int lado, int seguridad, Shader lightingShader)
 {
 	glm::mat4 model;
 
@@ -2184,8 +2221,6 @@ void silla(glm::mat4 model_loc, int lado, Shader lightingShader)
 	model = glm::scale(model, glm::vec3(2.5f, 5.0f, 5.0f));
 
 	lightingShader.setMat4("model", model);
-	lightingShader.setInt("material_diffuse", t_azul);
-	lightingShader.setInt("material_specular", t_azul_brillo);
 	glDrawArrays(GL_QUADS, 96, 40);      //Asiento
 	glDrawArrays(GL_POLYGON, 136, 10);   //Costado Derecho
 	glDrawArrays(GL_POLYGON, 146, 10);   //Costado Izquierdo
@@ -2208,86 +2243,89 @@ void silla(glm::mat4 model_loc, int lado, Shader lightingShader)
 
 	// ---------------- Tubos de Seguridad ----------------
 	
-	lightingShader.setInt("material_diffuse", t_amarillo);           //Texturas de los tubos
-	lightingShader.setInt("material_specular", t_amarillo_brillo);
-	
-	// --- Superior Derecho ---
-	model = glm::translate(model_loc, glm::vec3(1.0f, 1.5f, -1.125f));
-	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.25f, 1.25f, 0.25f));
+	if (seguridad != 0)
+	{
+		lightingShader.setInt("material_diffuse", t_amarillo);           //Texturas de los tubos
+		lightingShader.setInt("material_specular", t_amarillo_brillo);
 
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
+		// --- Superior Derecho ---
+		model = glm::translate(model_loc, glm::vec3(1.0f, 1.5f, -1.125f));
+		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.25f, 1.25f, 0.25f));
 
-	// --- Superior Derecho Inclinado ---
-	model = glm::translate(model_loc, glm::vec3(0.82f, 1.290f, -0.375f));
-	model = glm::rotate(model, glm::radians(-50.0f), glm::vec3(1.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.23f, 0.75f, 0.23f));
+		lightingShader.setMat4("model", model);
+		glDrawArrays(GL_QUADS, 24, 48);
+		glDrawArrays(GL_POLYGON, 72, 12);
+		glDrawArrays(GL_POLYGON, 84, 12);
 
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
+		// --- Superior Derecho Inclinado ---
+		model = glm::translate(model_loc, glm::vec3(0.82f, 1.290f, -0.375f));
+		model = glm::rotate(model, glm::radians(-50.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+		model = glm::scale(model, glm::vec3(0.23f, 0.75f, 0.23f));
 
-	// --- Frontal Derecho ---
-	model = glm::translate(model_loc, glm::vec3(0.630f, 0.625f, -0.175f));
-	model = glm::scale(model, glm::vec3(0.25f, 1.0f, 0.25f));
+		lightingShader.setMat4("model", model);
+		glDrawArrays(GL_QUADS, 24, 48);
+		glDrawArrays(GL_POLYGON, 72, 12);
+		glDrawArrays(GL_POLYGON, 84, 12);
 
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
+		// --- Frontal Derecho ---
+		model = glm::translate(model_loc, glm::vec3(0.630f, 0.625f, -0.175f));
+		model = glm::scale(model, glm::vec3(0.25f, 1.0f, 0.25f));
 
-	// --- Inferior Derecho Inclinado ---
-	model = glm::translate(model_loc, glm::vec3(0.63f, -0.61f, -0.975f));
-	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.23f, 2.30f, 0.23f));
+		lightingShader.setMat4("model", model);
+		glDrawArrays(GL_QUADS, 24, 48);
+		glDrawArrays(GL_POLYGON, 72, 12);
+		glDrawArrays(GL_POLYGON, 84, 12);
 
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
+		// --- Inferior Derecho Inclinado ---
+		model = glm::translate(model_loc, glm::vec3(0.63f, -0.61f, -0.975f));
+		model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.23f, 2.30f, 0.23f));
 
-	// --- Superior Izquierdo ---
-	model = glm::translate(model_loc, glm::vec3(-1.0f, 1.5f, -1.125f));
-	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.25f, 1.25f, 0.25f));
+		lightingShader.setMat4("model", model);
+		glDrawArrays(GL_QUADS, 24, 48);
+		glDrawArrays(GL_POLYGON, 72, 12);
+		glDrawArrays(GL_POLYGON, 84, 12);
 
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
+		// --- Superior Izquierdo ---
+		model = glm::translate(model_loc, glm::vec3(-1.0f, 1.5f, -1.125f));
+		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.25f, 1.25f, 0.25f));
 
-	// --- Superior Izquierdo Inclinado ---
-	model = glm::translate(model_loc, glm::vec3(-0.82f, 1.290f, -0.375f));
-	model = glm::rotate(model, glm::radians(-50.0f), glm::vec3(1.0f, 0.0f, -1.0f));
-	model = glm::scale(model, glm::vec3(0.23f, 0.75f, 0.23f));
+		lightingShader.setMat4("model", model);
+		glDrawArrays(GL_QUADS, 24, 48);
+		glDrawArrays(GL_POLYGON, 72, 12);
+		glDrawArrays(GL_POLYGON, 84, 12);
 
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
+		// --- Superior Izquierdo Inclinado ---
+		model = glm::translate(model_loc, glm::vec3(-0.82f, 1.290f, -0.375f));
+		model = glm::rotate(model, glm::radians(-50.0f), glm::vec3(1.0f, 0.0f, -1.0f));
+		model = glm::scale(model, glm::vec3(0.23f, 0.75f, 0.23f));
 
-	// --- Frontal Izquierdo ---
-	model = glm::translate(model_loc, glm::vec3(-0.630f, 0.625f, -0.175f));
-	model = glm::scale(model, glm::vec3(0.25f, 1.0f, 0.25f));
+		lightingShader.setMat4("model", model);
+		glDrawArrays(GL_QUADS, 24, 48);
+		glDrawArrays(GL_POLYGON, 72, 12);
+		glDrawArrays(GL_POLYGON, 84, 12);
 
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
+		// --- Frontal Izquierdo ---
+		model = glm::translate(model_loc, glm::vec3(-0.630f, 0.625f, -0.175f));
+		model = glm::scale(model, glm::vec3(0.25f, 1.0f, 0.25f));
 
-	// --- Inferior Izquierdo Inclinado ---
-	model = glm::translate(model_loc, glm::vec3(-0.63f, -0.61f, -0.975f));
-	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.23f, 2.30f, 0.23f));
+		lightingShader.setMat4("model", model);
+		glDrawArrays(GL_QUADS, 24, 48);
+		glDrawArrays(GL_POLYGON, 72, 12);
+		glDrawArrays(GL_POLYGON, 84, 12);
 
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);	
+		// --- Inferior Izquierdo Inclinado ---
+		model = glm::translate(model_loc, glm::vec3(-0.63f, -0.61f, -0.975f));
+		model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.23f, 2.30f, 0.23f));
+
+		lightingShader.setMat4("model", model);
+		glDrawArrays(GL_QUADS, 24, 48);
+		glDrawArrays(GL_POLYGON, 72, 12);
+		glDrawArrays(GL_POLYGON, 84, 12);
+	}
 }
 
 void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
@@ -2300,6 +2338,415 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	lightingShader.setInt("material_specular", t_azul_brillo);
 
 	// --- Rueda Frontal ---
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f)); //Ubicación del anillo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));         //Escala del anillo
+	anillo(model, lightingShader);                                  //Se dibuja el anillo
+
+	// --- Rueda Trasera ---
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f)); //Ubicación del anillo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));           //Escala del anillo
+	anillo(model, lightingShader);                                    //Se dibuja el anillo
+
+
+	//  ------------- Soportes de los Anillos -------------
+
+	lightingShader.setInt("material_diffuse", t_metal);          //Texturas de la estructura
+	lightingShader.setInt("material_specular", t_metal_brillo);
+
+	// --- Soportes Frontales ---
+	// 1
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 2
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(22.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 3
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 4
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(67.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 5
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 6
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(112.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 7
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(135.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 8
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(157.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// --- Soportes Traseros ---
+	// 1
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 2
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
+	model = glm::rotate(model, glm::radians(22.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 3
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
+	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 4
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
+	model = glm::rotate(model, glm::radians(67.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 5
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 6
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
+	model = glm::rotate(model, glm::radians(112.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 7
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
+	model = glm::rotate(model, glm::radians(135.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// 8
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
+	model = glm::rotate(model, glm::radians(157.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+
+	//  ------------- Eje de la Rueda -------------
+
+	lightingShader.setInt("material_diffuse", t_azul);          //Texturas del eje
+	lightingShader.setInt("material_specular", t_azul_brillo);
+
+	// Tubo central
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -3.5f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.25f, 10.0f, 1.25f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Anillo Frontal
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(2.0f, 1.0f, 2.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Anillo Trasero
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(2.0f, 1.0f, 2.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+
+	//  ------------- Soportes de la Base -------------
+
+	// -- Soportes Frontales ---
+
+	// Soporte Izquierdo
+	model = glm::translate(model_loc, glm::vec3(-6.0f, -10.5f, 1.0f));
+	model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Soporte Derecho
+	model = glm::translate(model_loc, glm::vec3(6.0f, -10.5f, 1.0f));
+	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	//Unión Soporte-Piso Izquierdo
+	model = glm::translate(model_loc, glm::vec3(-11.75f, -20.75f, 1.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	//Unión Soporte-Piso Derecho
+	model = glm::translate(model_loc, glm::vec3(11.75f, -20.75f, 1.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// -- Soportes Traseros ---
+
+	// Soporte Izquierdo
+	model = glm::translate(model_loc, glm::vec3(-6.0f, -10.5f, -8.0f));
+	model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Soporte Derecho
+	model = glm::translate(model_loc, glm::vec3(6.0f, -10.5f, -8.0f));
+	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	//Unión Soporte-Piso Izquierdo
+	model = glm::translate(model_loc, glm::vec3(-11.75f, -20.75f, -8.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	//Unión Soporte-Piso Derecho
+	model = glm::translate(model_loc, glm::vec3(11.75f, -20.75f, -8.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+
+	// ------------- Piso -------------
+
+	model = glm::translate(model_loc, glm::vec3(0.0f, -21.5f, -3.5f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(40.0f, 1.0f, 16.0f));
+
+	lightingShader.setMat4("model", model);
+	lightingShader.setInt("material_diffuse", t_terracota);          //Textura del piso
+	lightingShader.setInt("material_specular", t_terracota_brillo);
+	glDrawArrays(GL_QUADS, 0, 24);
+
+
+	//  ------------- Cúpulas-------------
+
+	// 1
+	lightingShader.setInt("material_diffuse", t_amarillo);              //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	model = glm::translate(model_loc, glm::vec3(-15.0f, -2.5f, -3.5f));  //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));              //Escala de la cúpula
+	cupula(model, lightingShader);                                       //Se dibuja la cúpula
+	
+}
+
+void cupula(glm::mat4 model_loc, Shader lightingShader)
+{
+	glm::mat4 model;  //Matriz para ir dibujando cada elemento
+
+	// ------------- Techo -------------
+	// Barrera
+	model = glm::translate(model_loc, glm::vec3(0.0f, 2.5f, 0.0f));
+	model = glm::scale(model, glm::vec3(6.75f, 0.3f, 6.75f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Adorno 1
+	model = glm::translate(model_loc, glm::vec3(0.0f, 2.625f, 0.0f));
+	model = glm::scale(model, glm::vec3(4.5f, 0.5f, 4.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Adorno 2
+	model = glm::translate(model_loc, glm::vec3(0.0f, 2.75f, 0.0f));
+	model = glm::scale(model, glm::vec3(2.5f, 0.5f, 2.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+	
+
+	// ------------- Contorno -------------
+	// Barrera
+	model = glm::translate(model_loc, glm::vec3(0.0f, -0.625f, 0.0f));              //Ubicación del anillo
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));   //El anillo va acostado
+	model = glm::scale(model, glm::vec3(0.2f, 0.2f, 1.75f));                        //Escala del anillo
+	anillo(model, lightingShader);                                                  //Se dibuja el anillo
+
+	// Borde
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.05f, 0.0f));                //Ubicación del anillo
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));   //El anillo va acostado
+	model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.225f));                       //Escala del anillo
+	anillo(model, lightingShader);                                                  //Se dibuja el anillo
+
+
+	//  ------------- Sillas -------------
+	// Izquierda
+	model = glm::translate(model_loc, glm::vec3(0.0f, -0.25f, 0.55f));    //Ubicación de la silla sobre la cúpula
+	model = glm::scale(model, glm::vec3(0.425f));                         //Escalado de la silla
+	silla(model, 0, 0, lightingShader);                                   //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+
+	// Derecha
+	model = glm::translate(model_loc, glm::vec3(0.0f, -0.25f, -0.55f));   //Ubicación de la silla sobre la cúpula
+	model = glm::scale(model, glm::vec3(0.425f));                         //Escalado de la silla
+	silla(model, 0, 0, lightingShader);                                   //Se dibuja la silla. -1: Guarda Derecha  1: Guarda Izquierda
+
+
+	//  ------------- Base -------------
+	// Piso
+	model = glm::translate(model_loc, glm::vec3(0.0f, -1.25f, 0.0f));
+	model = glm::scale(model, glm::vec3(6.75f, 0.3f, 6.75f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Adorno
+	model = glm::translate(model_loc, glm::vec3(0.0f, -1.5f, 0.0f));
+	model = glm::scale(model, glm::vec3(4.5f, 0.5f, 4.5f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+}
+
+
+void anillo(glm::mat4 model_loc, Shader lightingShader)
+{
+	glm::mat4 model;  //Matriz para ir dibujando cada elemento
+
+	// ------------ Partes del Anillo ------------
 	// 1
 	model = glm::translate(model_loc, glm::vec3(0.0f, 15.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -2459,468 +2906,4 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	glDrawArrays(GL_QUADS, 24, 48);
 	glDrawArrays(GL_POLYGON, 72, 12);
 	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// --- Rueda Trasera ---
-	// 1
-	model = glm::translate(model_loc, glm::vec3(0.0f, 15.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 2
-	model = glm::translate(model_loc, glm::vec3(0.0f, -15.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 3
-	model = glm::translate(model_loc, glm::vec3(15.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 4
-	model = glm::translate(model_loc, glm::vec3(-15.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 5
-	model = glm::translate(model_loc, glm::vec3(10.675f, 10.675f, -10.0f));
-	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 5.90f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 6
-	model = glm::translate(model_loc, glm::vec3(-10.675f, -10.675f, -10.0f));
-	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 5.90f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 7
-	model = glm::translate(model_loc, glm::vec3(10.675f, -10.675f, -10.0f));
-	model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 5.90f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 8
-	model = glm::translate(model_loc, glm::vec3(-10.675f, 10.675f, -10.0f));
-	model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 5.90f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 9
-	model = glm::translate(model_loc, glm::vec3(5.85f, 13.85f, -10.0f));
-	model = glm::rotate(model, glm::radians(67.75f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 10
-	model = glm::translate(model_loc, glm::vec3(-5.85f, -13.85f, -10.0f));
-	model = glm::rotate(model, glm::radians(67.75f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 11
-	model = glm::translate(model_loc, glm::vec3(5.85f, -13.85f, -10.0f));
-	model = glm::rotate(model, glm::radians(-67.75f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 12
-	model = glm::translate(model_loc, glm::vec3(-5.85f, 13.85f, -10.0f));
-	model = glm::rotate(model, glm::radians(-67.75f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 13
-	model = glm::translate(model_loc, glm::vec3(13.85f, 5.85f, -10.0f));
-	model = glm::rotate(model, glm::radians(22.25f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 14
-	model = glm::translate(model_loc, glm::vec3(-13.85f, -5.85f, -10.0f));
-	model = glm::rotate(model, glm::radians(22.25f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 15
-	model = glm::translate(model_loc, glm::vec3(13.85f, -5.85f, -10.0f));
-	model = glm::rotate(model, glm::radians(-22.25f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 16
-	model = glm::translate(model_loc, glm::vec3(-13.85f, 5.85f, -10.0f));
-	model = glm::rotate(model, glm::radians(-22.25f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 6.25f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-
-	//  ------------- Soportes de los Anillos -------------
-
-	lightingShader.setInt("material_diffuse", t_metal);          //Texturas de la estructura
-	lightingShader.setInt("material_specular", t_metal_brillo);
-
-	// --- Soportes Frontales ---
-	// 1
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 2
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(22.5f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 3
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 4
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(67.5f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 5
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 6
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(112.5f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 7
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(135.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 8
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(157.5f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// --- Soportes Traseros ---
-	// 1
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 2
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(22.5f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 3
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 4
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(67.5f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 5
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 6
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(112.5f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 7
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(135.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// 8
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(157.5f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-
-	//  ------------- Eje de la Rueda -------------
-
-	lightingShader.setInt("material_diffuse", t_azul);          //Texturas del eje
-	lightingShader.setInt("material_specular", t_azul_brillo);
-
-	// Tubo central
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -5.0f));
-	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(1.25f, 13.0f, 1.25f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// Anillo Frontal
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(2.0f, 1.0f, 2.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// Anillo Trasero
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(2.0f, 1.0f, 2.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-	
-
-	//  ------------- Soportes de la Base -------------
-	
-	// -- Soportes Frontales ---
-
-	// Soporte Izquierdo
-	model = glm::translate(model_loc, glm::vec3(-6.0f, -10.5f, 1.0f));
-	model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// Soporte Derecho
-	model = glm::translate(model_loc, glm::vec3(6.0f, -10.5f, 1.0f));
-	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	//Unión Soporte-Piso Izquierdo
-	model = glm::translate(model_loc, glm::vec3(-11.75f, -20.75f, 1.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	//Unión Soporte-Piso Derecho
-	model = glm::translate(model_loc, glm::vec3(11.75f, -20.75f, 1.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// -- Soportes Traseros ---
-
-	// Soporte Izquierdo
-	model = glm::translate(model_loc, glm::vec3(-6.0f, -10.5f, -11.0f));
-	model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	// Soporte Derecho
-	model = glm::translate(model_loc, glm::vec3(6.0f, -10.5f, -11.0f));
-	model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 24.0f, 1.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	//Unión Soporte-Piso Izquierdo
-	model = glm::translate(model_loc, glm::vec3(-11.75f, -20.75f, -11.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-	//Unión Soporte-Piso Derecho
-	model = glm::translate(model_loc, glm::vec3(11.75f, -20.75f, -11.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 2.0f));
-
-	lightingShader.setMat4("model", model);
-	glDrawArrays(GL_QUADS, 24, 48);
-	glDrawArrays(GL_POLYGON, 72, 12);
-	glDrawArrays(GL_POLYGON, 84, 12);
-
-
-	// ------------- Piso -------------
-
-	model = glm::translate(model_loc, glm::vec3(0.0f, -21.5f, -5.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(40.0f, 1.0f, 16.0f));
-
-	lightingShader.setMat4("model", model);
-	lightingShader.setInt("material_diffuse", t_terracota);          //Textura del piso
-	lightingShader.setInt("material_specular", t_terracota_brillo);
-	glDrawArrays(GL_QUADS, 0, 24);
 }
