@@ -2654,12 +2654,60 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	//  ------------- Cúpulas-------------
 
 	// 1
-	lightingShader.setInt("material_diffuse", t_amarillo);              //Texturas de la cúpula
+	lightingShader.setInt("material_diffuse", t_amarillo);               //Texturas de la cúpula
 	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	model = glm::translate(model_loc, glm::vec3(15.0f, -2.5f, -3.5f));   //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));              //Escala de la cúpula
+	cupula(model, lightingShader);                                       //Se dibuja la cúpula
+
+	// 2
+	lightingShader.setInt("material_diffuse", t_azul);                   //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_azul_brillo);
 	model = glm::translate(model_loc, glm::vec3(-15.0f, -2.5f, -3.5f));  //Ubicación de la cúpula
 	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));              //Escala de la cúpula
 	cupula(model, lightingShader);                                       //Se dibuja la cúpula
-	
+
+	// 3
+	lightingShader.setInt("material_diffuse", t_amarillo);               //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	model = glm::translate(model_loc, glm::vec3(0.0f, 12.5f, -3.5f));    //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));              //Escala de la cúpula
+	cupula(model, lightingShader);                                       //Se dibuja la cúpula
+
+	// 4
+	lightingShader.setInt("material_diffuse", t_amarillo);               //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	model = glm::translate(model_loc, glm::vec3(0.0f, -17.5f, -3.5f));   //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));              //Escala de la cúpula
+	cupula(model, lightingShader);                                       //Se dibuja la cúpula
+
+	// 5
+	lightingShader.setInt("material_diffuse", t_amarillo);                    //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	model = glm::translate(model_loc, glm::vec3(10.675f, 8.175f, -3.5f));     //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
+	cupula(model, lightingShader);                                            //Se dibuja la cúpula
+
+	// 6
+	lightingShader.setInt("material_diffuse", t_azul);                        //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_azul_brillo);
+	model = glm::translate(model_loc, glm::vec3(-10.675f, 8.175f, -3.5f));    //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
+	cupula(model, lightingShader);                                            //Se dibuja la cúpula
+
+	// 7
+	lightingShader.setInt("material_diffuse", t_amarillo);                    //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	model = glm::translate(model_loc, glm::vec3(10.675f, -13.175f, -3.5f));   //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
+	cupula(model, lightingShader);                                            //Se dibuja la cúpula
+
+	// 8
+	lightingShader.setInt("material_diffuse", t_amarillo);                    //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	model = glm::translate(model_loc, glm::vec3(-10.675f, -13.175f, -3.5f));  //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
+	cupula(model, lightingShader);                                            //Se dibuja la cúpula
 }
 
 void cupula(glm::mat4 model_loc, Shader lightingShader)
@@ -2739,6 +2787,96 @@ void cupula(glm::mat4 model_loc, Shader lightingShader)
 	glDrawArrays(GL_QUADS, 24, 48);
 	glDrawArrays(GL_POLYGON, 72, 12);
 	glDrawArrays(GL_POLYGON, 84, 12);
+
+
+	//  ------------- Uniones del Techo con la Base -------------
+
+	lightingShader.setInt("material_diffuse", t_metal);          //Textura de las uniones
+	lightingShader.setInt("material_specular", t_metal_brillo);
+
+	// --- Barras Verticales ---
+	
+	// Unión Frontal Izquierda
+	model = glm::translate(model_loc, glm::vec3(-1.25f, 1.25f, 2.75f));
+	model = glm::scale(model, glm::vec3(0.15f, 2.5f, 0.15f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Unión Frontal Derecha
+	model = glm::translate(model_loc, glm::vec3(-1.25f, 1.25f, -2.75f));
+	model = glm::scale(model, glm::vec3(0.15f, 2.5f, 0.15f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Unión Trasera Izquierda
+	model = glm::translate(model_loc, glm::vec3(1.25f, 1.25f, 2.75f));
+	model = glm::scale(model, glm::vec3(0.15f, 2.5f, 0.15f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Unión Trasera Derecha
+	model = glm::translate(model_loc, glm::vec3(1.25f, 1.25f, -2.75f));
+	model = glm::scale(model, glm::vec3(0.15f, 2.5f, 0.15f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// --- Remaches ---
+
+	// Remache Frontal Izquierdo
+	model = glm::translate(model_loc, glm::vec3(-1.25f, 2.5f, 2.75f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(70.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.25f, 0.15f, 0.25f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Remache Frontal Derecho
+	model = glm::translate(model_loc, glm::vec3(-1.25f, 2.5f, -2.75f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(-70.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.25f, 0.15f, 0.25f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Remache Trasero Izquierdo
+	model = glm::translate(model_loc, glm::vec3(1.25f, 2.5f, 2.75f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(-70.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.25f, 0.15f, 0.25f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);
+
+	// Remache Trasero Derecho
+	model = glm::translate(model_loc, glm::vec3(1.25f, 2.5f, -2.75f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(70.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.25f, 0.15f, 0.25f));
+
+	lightingShader.setMat4("model", model);
+	glDrawArrays(GL_QUADS, 24, 48);
+	glDrawArrays(GL_POLYGON, 72, 12);
+	glDrawArrays(GL_POLYGON, 84, 12);	
 }
 
 
