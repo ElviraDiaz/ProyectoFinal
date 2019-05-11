@@ -142,23 +142,47 @@ glm::vec3 Light_Direction = camera.Front;
 
 //-------- Texturas --------
 
-//Difusas
-unsigned int t_metal;
-unsigned int t_amarillo;
-unsigned int t_azul;
-unsigned int t_negro;
+// --- Difusas ---
 
+// Materiales
+unsigned int t_metal;
+unsigned int t_metal_amarillo;
 unsigned int t_piedra;
 unsigned int t_terracota;
 
-//Especulares
-unsigned int t_metal_brillo;
-unsigned int t_amarillo_brillo;
-unsigned int t_azul_brillo;
-unsigned int t_negro_brillo;
+//Colores
+unsigned int t_negro;
+unsigned int t_cafe;
+unsigned int t_rojo;
+unsigned int t_naranja;
+unsigned int t_amarillo;
+unsigned int t_verde;
+unsigned int t_azul;
+unsigned int t_azul_rey;
+unsigned int t_morado;
+unsigned int t_rosa;
+unsigned int t_blanco;
 
+// --- Especulares ---
+
+// Materiales
+unsigned int t_metal_brillo;
+unsigned int t_metal_amarillo_brillo;
 unsigned int t_piedra_brillo;
 unsigned int t_terracota_brillo;
+
+//Colores
+unsigned int t_negro_brillo;
+unsigned int t_cafe_brillo;
+unsigned int t_rojo_brillo;
+unsigned int t_naranja_brillo;
+unsigned int t_amarillo_brillo;
+unsigned int t_verde_brillo;
+unsigned int t_azul_brillo;
+unsigned int t_azul_rey_brillo;
+unsigned int t_morado_brillo;
+unsigned int t_rosa_brillo;
+unsigned int t_blanco_brillo;
 
 // ------- Propiedades de la Luz --------
 float opacidad = 32.0f;
@@ -219,24 +243,52 @@ void getResolution()
 // .png ----> 1
 void LoadTextures()
 {
-	//Texturas para primitivas
+	// Texturas de Materiales
 	t_metal = generateTextures("Texturas/Metal.png", 1);
 	t_metal_brillo = generateTextures("Texturas/Metal_Especular.png", 1);
 
-	t_amarillo = generateTextures("Texturas/Amarillo.png", 1);
-	t_amarillo_brillo = generateTextures("Texturas/Amarillo_Especular.png", 1);
-
-	t_azul = generateTextures("Texturas/Azul.png", 1);
-	t_azul_brillo = generateTextures("Texturas/Azul_Especular.png", 1);
-
-	t_negro = generateTextures("Texturas/Negro.png", 1);
-	t_negro_brillo = generateTextures("Texturas/Negro_Especular.png", 1);
+	t_metal_amarillo = generateTextures("Texturas/Metal_Amarillo.png", 1);
+	t_metal_amarillo_brillo = generateTextures("Texturas/Metal_Amarillo_Especular.png", 1);
 
 	t_piedra = generateTextures("Texturas/Piedra.png", 1);
 	t_piedra_brillo = generateTextures("Texturas/Piedra_Especular.png", 1);
 
 	t_terracota = generateTextures("Texturas/Terracota.png", 1);
 	t_terracota_brillo = generateTextures("Texturas/Terracota_Especular.png", 1);
+
+	// Texturas de Colores
+	t_negro = generateTextures("Texturas/Negro.png", 1);
+	t_negro_brillo = generateTextures("Texturas/Negro_Especular.png", 1);
+
+	t_cafe = generateTextures("Texturas/Cafe.png", 1);
+	t_cafe_brillo = generateTextures("Texturas/Cafe_Especular.png", 1);
+
+	t_rojo = generateTextures("Texturas/Rojo.png", 1);
+	t_rojo_brillo = generateTextures("Texturas/Rojo_Especular.png", 1);
+
+	t_naranja = generateTextures("Texturas/Naranja.png", 1);
+	t_naranja_brillo = generateTextures("Texturas/Naranja_Especular.png", 1);
+
+	t_amarillo = generateTextures("Texturas/Amarillo.png", 1);
+	t_amarillo_brillo = generateTextures("Texturas/Amarillo_Especular.png", 1);
+
+	t_verde = generateTextures("Texturas/Verde.png", 1);
+	t_verde_brillo = generateTextures("Texturas/Verde_Especular.png", 1);
+
+	t_azul = generateTextures("Texturas/Azul.png", 1);
+	t_azul_brillo = generateTextures("Texturas/Azul_Especular.png", 1);
+
+	t_azul_rey = generateTextures("Texturas/Azul_rey.png", 1);
+	t_azul_rey_brillo = generateTextures("Texturas/Azul_rey_Especular.png", 1);
+
+	t_morado = generateTextures("Texturas/Morado.png", 1);
+	t_morado_brillo = generateTextures("Texturas/Morado_Especular.png", 1);
+
+	t_rosa = generateTextures("Texturas/Rosa.png", 1);
+	t_rosa_brillo = generateTextures("Texturas/Rosa_Especular.png", 1);
+
+	t_blanco = generateTextures("Texturas/Blanco.png", 1);
+	t_blanco_brillo = generateTextures("Texturas/Blanco_Especular.png", 1);
 
 	// bind textures on corresponding texture units
 	glActiveTexture(GL_TEXTURE0);
@@ -248,29 +300,75 @@ void LoadTextures()
 	glBindTexture(GL_TEXTURE_2D, t_metal_brillo);
 
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, t_amarillo);
+	glBindTexture(GL_TEXTURE_2D, t_metal_amarillo);
 	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, t_amarillo_brillo);
+	glBindTexture(GL_TEXTURE_2D, t_metal_amarillo_brillo);
 
 	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_2D, t_azul);
-	glActiveTexture(GL_TEXTURE6);
-	glBindTexture(GL_TEXTURE_2D, t_azul_brillo);
-
-	glActiveTexture(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_2D, t_negro);
-	glActiveTexture(GL_TEXTURE8);
-	glBindTexture(GL_TEXTURE_2D, t_negro_brillo);
-	
-	glActiveTexture(GL_TEXTURE9);
 	glBindTexture(GL_TEXTURE_2D, t_piedra);
-	glActiveTexture(GL_TEXTURE10);
+	glActiveTexture(GL_TEXTURE6);
 	glBindTexture(GL_TEXTURE_2D, t_piedra_brillo);
 
-	glActiveTexture(GL_TEXTURE11);
+	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, t_terracota);
-	glActiveTexture(GL_TEXTURE12);
+	glActiveTexture(GL_TEXTURE8);
 	glBindTexture(GL_TEXTURE_2D, t_terracota_brillo);
+
+
+	glActiveTexture(GL_TEXTURE9);
+	glBindTexture(GL_TEXTURE_2D, t_negro);
+	glActiveTexture(GL_TEXTURE10);
+	glBindTexture(GL_TEXTURE_2D, t_negro_brillo);
+
+	glActiveTexture(GL_TEXTURE11);
+	glBindTexture(GL_TEXTURE_2D, t_cafe);
+	glActiveTexture(GL_TEXTURE12);
+	glBindTexture(GL_TEXTURE_2D, t_cafe_brillo);
+
+	glActiveTexture(GL_TEXTURE13);
+	glBindTexture(GL_TEXTURE_2D, t_rojo);
+	glActiveTexture(GL_TEXTURE14);
+	glBindTexture(GL_TEXTURE_2D, t_rojo_brillo);
+
+	glActiveTexture(GL_TEXTURE15);
+	glBindTexture(GL_TEXTURE_2D, t_naranja);
+	glActiveTexture(GL_TEXTURE16);
+	glBindTexture(GL_TEXTURE_2D, t_naranja_brillo);
+
+	glActiveTexture(GL_TEXTURE17);
+	glBindTexture(GL_TEXTURE_2D, t_amarillo);
+	glActiveTexture(GL_TEXTURE18);
+	glBindTexture(GL_TEXTURE_2D, t_amarillo_brillo);
+
+	glActiveTexture(GL_TEXTURE19);
+	glBindTexture(GL_TEXTURE_2D, t_verde);
+	glActiveTexture(GL_TEXTURE20);
+	glBindTexture(GL_TEXTURE_2D, t_verde_brillo);
+
+	glActiveTexture(GL_TEXTURE21);
+	glBindTexture(GL_TEXTURE_2D, t_azul);
+	glActiveTexture(GL_TEXTURE22);
+	glBindTexture(GL_TEXTURE_2D, t_azul_brillo);
+
+	glActiveTexture(GL_TEXTURE23);
+	glBindTexture(GL_TEXTURE_2D, t_azul_rey);
+	glActiveTexture(GL_TEXTURE24);
+	glBindTexture(GL_TEXTURE_2D, t_azul_rey_brillo);
+
+	glActiveTexture(GL_TEXTURE25);
+	glBindTexture(GL_TEXTURE_2D, t_morado);
+	glActiveTexture(GL_TEXTURE26);
+	glBindTexture(GL_TEXTURE_2D, t_morado_brillo);
+
+	glActiveTexture(GL_TEXTURE27);
+	glBindTexture(GL_TEXTURE_2D, t_rosa);
+	glActiveTexture(GL_TEXTURE28);
+	glBindTexture(GL_TEXTURE_2D, t_rosa_brillo);
+
+	glActiveTexture(GL_TEXTURE29);
+	glBindTexture(GL_TEXTURE_2D, t_blanco);
+	glActiveTexture(GL_TEXTURE30);
+	glBindTexture(GL_TEXTURE_2D, t_blanco_brillo);
 }
 
 void myData()
@@ -431,58 +529,58 @@ void myData()
 		// Posición             // Normales           // UV's
 
 		//Cara 1
-		 0.5f,  0.25f, -0.5f,   0.0f, 0.0f, -1.0f,   1.0f, 1.0f,    // top right
-		 0.5f, -0.3f,  -0.4f,   0.0f, 0.0f, -1.0f,   1.0f, 0.0f,    // bottom right
-		-0.5f, -0.3f,  -0.4f,   0.0f, 0.0f, -1.0f,   0.0f, 0.0f,    // bottom left
-		-0.5f,  0.25f, -0.5f,   0.0f, 0.0f, -1.0f,   0.0f, 1.0f,    // top left 
+		 0.5f,  0.25f, -0.5f,   0.0f, 0.0f, -1.0f,   1.0f, 1.0f,     // top right
+		 0.5f, -0.3f,  -0.4f,   0.0f, 0.0f, -1.0f,   1.0f, 0.0f,     // bottom right
+		-0.5f, -0.3f,  -0.4f,   0.0f, 0.0f, -1.0f,   0.0f, 0.0f,     // bottom left
+		-0.5f,  0.25f, -0.5f,   0.0f, 0.0f, -1.0f,   0.0f, 1.0f,     // top left 
 
 		//Cara 2
-		 0.5f,  0.45f, -0.4f,   0.0f, 0.0f, -1.0f,   1.0f, 1.0f,    // top right
-		 0.5f,  0.25f, -0.5f,   0.0f, 0.0f, -1.0f,   1.0f, 0.0f,    // bottom right
-		-0.5f,  0.25f, -0.5f,   0.0f, 0.0f, -1.0f,   0.0f, 0.0f,    // bottom left
-		-0.5f,  0.45f, -0.4f,   0.0f, 0.0f, -1.0f,   0.0f, 1.0f,    // top left 
+		 0.5f,  0.45f, -0.4f,   0.0f, 0.0f, -1.0f,   1.0f, 1.0f,     // top right
+		 0.5f,  0.25f, -0.5f,   0.0f, 0.0f, -1.0f,   1.0f, 0.0f,     // bottom right
+		-0.5f,  0.25f, -0.5f,   0.0f, 0.0f, -1.0f,   0.0f, 0.0f,     // bottom left
+		-0.5f,  0.45f, -0.4f,   0.0f, 0.0f, -1.0f,   0.0f, 1.0f,     // top left 
 
 		//Cara 3
-		 0.5f,  0.45f, -0.35f,  0.0f, 1.0f, 0.0f,   1.0f, 1.0f,    // top right
-	     0.5f,  0.45f, -0.4f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,    // bottom right
-	    -0.5f,  0.45f, -0.4f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,    // bottom left
-		-0.5f,  0.45f, -0.35f,  0.0f, 1.0f, 0.0f,   0.0f, 1.0f,    // top left 
+		 0.5f,  0.45f, -0.35f,  0.0f, 1.0f, 0.0f,   1.0f, 1.0f,      // top right
+	     0.5f,  0.45f, -0.4f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,      // bottom right
+	    -0.5f,  0.45f, -0.4f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,      // bottom left
+		-0.5f,  0.45f, -0.35f,  0.0f, 1.0f, 0.0f,   0.0f, 1.0f,      // top left 
 
 		//Cara 4
-		 0.5f, -0.2f,  -0.3f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,    // top right
-	     0.5f,  0.45f, -0.35f,  0.0f, 0.0f, 1.0f,   1.0f, 0.0f,    // bottom right
-	    -0.5f,  0.45f, -0.35f,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,    // bottom left
-		-0.5f, -0.2f,  -0.3f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,    // top left 
+		 0.5f, -0.2f,  -0.3f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,      // top right
+	     0.5f,  0.45f, -0.35f,  0.0f, 0.0f, 1.0f,   1.0f, 0.0f,      // bottom right
+	    -0.5f,  0.45f, -0.35f,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,      // bottom left
+		-0.5f, -0.2f,  -0.3f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,      // top left 
 
 		//Cara 5
-		 0.5f, -0.25f, -0.1f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,    // top right
-	     0.5f, -0.2f,  -0.3f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,    // bottom right
-	    -0.5f, -0.2f,  -0.3f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,    // bottom left
-		-0.5f, -0.25f, -0.1f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,    // top left 
+		 0.5f, -0.25f, -0.1f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,      // top right
+	     0.5f, -0.2f,  -0.3f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,      // bottom right
+	    -0.5f, -0.2f,  -0.3f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,      // bottom left
+		-0.5f, -0.25f, -0.1f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,      // top left 
 
 		//Cara 6
-		 0.5f, -0.2f,   0.3f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,    // top right
-	     0.5f, -0.25f, -0.1f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,    // bottom right
-	    -0.5f, -0.25f, -0.1f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,    // bottom left
-		-0.5f, -0.2f,   0.3f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,    // top left 
+		 0.5f, -0.2f,   0.3f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,      // top right
+	     0.5f, -0.25f, -0.1f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,      // bottom right
+	    -0.5f, -0.25f, -0.1f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,      // bottom left
+		-0.5f, -0.2f,   0.3f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,      // top left 
 
 		//Cara 7
-		 0.5f, -0.25f,  0.3f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,    // top right
-	     0.5f, -0.2f,   0.3f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,    // bottom right
-	    -0.5f, -0.2f,   0.3f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,    // bottom left
-		-0.5f, -0.25f,  0.3f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,    // top left 
+		 0.5f, -0.25f,  0.3f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,      // top right
+	     0.5f, -0.2f,   0.3f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,      // bottom right
+	    -0.5f, -0.2f,   0.3f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,      // bottom left
+		-0.5f, -0.25f,  0.3f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,      // top left 
 
 		//Cara 8
-		 0.5f, -0.4f,   0.2f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,    // top right
-	     0.5f, -0.25f,  0.3f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,    // bottom right
-	    -0.5f, -0.25f,  0.3f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,    // bottom left
-		-0.5f, -0.4f,   0.2f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,    // top left 
+		 0.5f, -0.4f,   0.2f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,      // top right
+	     0.5f, -0.25f,  0.3f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,      // bottom right
+	    -0.5f, -0.25f,  0.3f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,      // bottom left
+		-0.5f, -0.4f,   0.2f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,      // top left 
 
 		//Cara 9
-		 0.5f, -0.5f,  -0.2f,   0.0f, -1.0f, 0.0f,   1.0f, 1.0f,    // top right
-	     0.5f, -0.4f,   0.2f,   0.0f, -1.0f, 0.0f,   1.0f, 0.0f,    // bottom right
-	    -0.5f, -0.4f,   0.2f,   0.0f, -1.0f, 0.0f,   0.0f, 0.0f,    // bottom left
-		-0.5f, -0.5f,  -0.2f,   0.0f, -1.0f, 0.0f,   0.0f, 1.0f,    // top left 
+		 0.5f, -0.5f,  -0.2f,   0.0f, -1.0f, 0.0f,   1.0f, 1.0f,     // top right
+	     0.5f, -0.4f,   0.2f,   0.0f, -1.0f, 0.0f,   1.0f, 0.0f,     // bottom right
+	    -0.5f, -0.4f,   0.2f,   0.0f, -1.0f, 0.0f,   0.0f, 0.0f,     // bottom left
+		-0.5f, -0.5f,  -0.2f,   0.0f, -1.0f, 0.0f,   0.0f, 1.0f,     // top left 
 
 		//Cara 10
 		 0.5f, -0.3f, -0.4f,    0.0f, -1.0f, 0.0f,    1.0f, 1.0f,    // top right
@@ -2019,8 +2117,8 @@ void montañaRusa(glm::mat4 model_loc, Shader lightingShader, Shader modelShader,
 	model = glm::translate(model_loc, glm::vec3(2.4f, 6.4f, 0.5f));
 	model = glm::scale(model, glm::vec3(3.0f, 1.5f, 0.25f));
 	lightingShader.setMat4("model", model);
-	lightingShader.setInt("material_diffuse", t_amarillo);
-	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	lightingShader.setInt("material_diffuse", t_metal_amarillo);
+	lightingShader.setInt("material_specular", t_metal_amarillo_brillo);
 	esfera.render();
 
 	// Óvalo Negro
@@ -2046,8 +2144,8 @@ void riel(glm::mat4 model_loc, float escala_x, float rotacion, Shader lightingSh
 	//Se aplica la rotación a todo el riel
 	model_loc = glm::rotate(model_loc, glm::radians(rotacion), glm::vec3(0.0f, 0.0f, 1.0f));
 
-	lightingShader.setInt("material_diffuse", t_amarillo);           //Textura de todos los rieles
-	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	lightingShader.setInt("material_diffuse", t_metal_amarillo);           //Textura de todos los rieles
+	lightingShader.setInt("material_specular", t_metal_amarillo_brillo);
 	
 	// ------------- Riel Frontal -------------
 
@@ -2245,8 +2343,8 @@ void silla(glm::mat4 model_loc, int lado, int seguridad, Shader lightingShader)
 	
 	if (seguridad != 0)
 	{
-		lightingShader.setInt("material_diffuse", t_amarillo);           //Texturas de los tubos
-		lightingShader.setInt("material_specular", t_amarillo_brillo);
+		lightingShader.setInt("material_diffuse", t_metal_amarillo);           //Texturas de los tubos
+		lightingShader.setInt("material_specular", t_metal_amarillo_brillo);
 
 		// --- Superior Derecho ---
 		model = glm::translate(model_loc, glm::vec3(1.0f, 1.5f, -1.125f));
@@ -2334,24 +2432,24 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 
 	//  ------------- Estructura Circular -------------
 
-	lightingShader.setInt("material_diffuse", t_azul);          //Texturas de la estructura
+	lightingShader.setInt("material_diffuse", t_azul);              //Texturas de la estructura
 	lightingShader.setInt("material_specular", t_azul_brillo);
 
 	// --- Rueda Frontal ---
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f)); //Ubicación del anillo
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));         //Escala del anillo
-	anillo(model, lightingShader);                                  //Se dibuja el anillo
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));     //Ubicación del anillo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));             //Escala del anillo
+	anillo(model, lightingShader);                                      //Se dibuja el anillo
 
 	// --- Rueda Trasera ---
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f)); //Ubicación del anillo
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));           //Escala del anillo
-	anillo(model, lightingShader);                                    //Se dibuja el anillo
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));    //Ubicación del anillo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));             //Escala del anillo
+	anillo(model, lightingShader);                                      //Se dibuja el anillo
 
 
 	//  ------------- Soportes de los Anillos -------------
 
-	lightingShader.setInt("material_diffuse", t_metal);          //Texturas de la estructura
-	lightingShader.setInt("material_specular", t_metal_brillo);
+	lightingShader.setInt("material_diffuse", t_blanco);               //Texturas de la estructura
+	lightingShader.setInt("material_specular", t_blanco_brillo);
 
 	// --- Soportes Frontales ---
 	// 1
@@ -2654,57 +2752,57 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	//  ------------- Cúpulas-------------
 
 	// 1
-	lightingShader.setInt("material_diffuse", t_amarillo);               //Texturas de la cúpula
-	lightingShader.setInt("material_specular", t_amarillo_brillo);
-	model = glm::translate(model_loc, glm::vec3(15.0f, -2.5f, -3.5f));   //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));              //Escala de la cúpula
-	cupula(model, lightingShader);                                       //Se dibuja la cúpula
+	lightingShader.setInt("material_diffuse", t_cafe);          //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_cafe_brillo);
+	model = glm::translate(model_loc, glm::vec3(15.0f, -2.5f, -3.5f));    //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));               //Escala de la cúpula
+	cupula(model, lightingShader);                                        //Se dibuja la cúpula
 
 	// 2
-	lightingShader.setInt("material_diffuse", t_azul);                   //Texturas de la cúpula
-	lightingShader.setInt("material_specular", t_azul_brillo);
-	model = glm::translate(model_loc, glm::vec3(-15.0f, -2.5f, -3.5f));  //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));              //Escala de la cúpula
-	cupula(model, lightingShader);                                       //Se dibuja la cúpula
+	lightingShader.setInt("material_diffuse", t_morado);                    //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_morado_brillo);
+	model = glm::translate(model_loc, glm::vec3(-15.0f, -2.5f, -3.5f));   //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));               //Escala de la cúpula
+	cupula(model, lightingShader);                                        //Se dibuja la cúpula
 
 	// 3
-	lightingShader.setInt("material_diffuse", t_amarillo);               //Texturas de la cúpula
-	lightingShader.setInt("material_specular", t_amarillo_brillo);
-	model = glm::translate(model_loc, glm::vec3(0.0f, 12.5f, -3.5f));    //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));              //Escala de la cúpula
-	cupula(model, lightingShader);                                       //Se dibuja la cúpula
+	lightingShader.setInt("material_diffuse", t_azul_rey);          //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_azul_rey);
+	model = glm::translate(model_loc, glm::vec3(0.0f, 12.5f, -3.5f));     //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));               //Escala de la cúpula
+	cupula(model, lightingShader);                                        //Se dibuja la cúpula
 
 	// 4
-	lightingShader.setInt("material_diffuse", t_amarillo);               //Texturas de la cúpula
-	lightingShader.setInt("material_specular", t_amarillo_brillo);
-	model = glm::translate(model_loc, glm::vec3(0.0f, -17.5f, -3.5f));   //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));              //Escala de la cúpula
-	cupula(model, lightingShader);                                       //Se dibuja la cúpula
+	lightingShader.setInt("material_diffuse", t_rojo);          //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_rojo_brillo);
+	model = glm::translate(model_loc, glm::vec3(0.0f, -17.5f, -3.5f));    //Ubicación de la cúpula
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));               //Escala de la cúpula
+	cupula(model, lightingShader);                                        //Se dibuja la cúpula
 
 	// 5
-	lightingShader.setInt("material_diffuse", t_amarillo);                    //Texturas de la cúpula
-	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	lightingShader.setInt("material_diffuse", t_rosa);              //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_rosa_brillo);
 	model = glm::translate(model_loc, glm::vec3(10.675f, 8.175f, -3.5f));     //Ubicación de la cúpula
 	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
 	cupula(model, lightingShader);                                            //Se dibuja la cúpula
 
 	// 6
-	lightingShader.setInt("material_diffuse", t_azul);                        //Texturas de la cúpula
-	lightingShader.setInt("material_specular", t_azul_brillo);
+	lightingShader.setInt("material_diffuse", t_naranja);                        //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_naranja_brillo);
 	model = glm::translate(model_loc, glm::vec3(-10.675f, 8.175f, -3.5f));    //Ubicación de la cúpula
 	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
 	cupula(model, lightingShader);                                            //Se dibuja la cúpula
 
 	// 7
-	lightingShader.setInt("material_diffuse", t_amarillo);                    //Texturas de la cúpula
+	lightingShader.setInt("material_diffuse", t_amarillo);                        //Texturas de la cúpula
 	lightingShader.setInt("material_specular", t_amarillo_brillo);
 	model = glm::translate(model_loc, glm::vec3(10.675f, -13.175f, -3.5f));   //Ubicación de la cúpula
 	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
 	cupula(model, lightingShader);                                            //Se dibuja la cúpula
 
 	// 8
-	lightingShader.setInt("material_diffuse", t_amarillo);                    //Texturas de la cúpula
-	lightingShader.setInt("material_specular", t_amarillo_brillo);
+	lightingShader.setInt("material_diffuse", t_verde);                    //Texturas de la cúpula
+	lightingShader.setInt("material_specular", t_verde_brillo);
 	model = glm::translate(model_loc, glm::vec3(-10.675f, -13.175f, -3.5f));  //Ubicación de la cúpula
 	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
 	cupula(model, lightingShader);                                            //Se dibuja la cúpula
