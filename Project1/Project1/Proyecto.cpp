@@ -117,6 +117,9 @@ float	movX = 0.0f,
 		movZ = -5.0f,
 		rotX = 0.0f;
 
+// Variables para la animación
+float giroRueda = 0.0f;
+
 // Para controlar la intensidad de la luz
 int CeroPresionado = 0;
 int NuevePresionado = 0;
@@ -693,6 +696,7 @@ void myData()
 
 void animate(void)
 {
+	giroRueda += 1.0f;
 }
 
 void display(Shader modelShader, Model batarang)
@@ -2436,14 +2440,16 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	lightingShader.setInt("material_specular", t_azul_brillo);
 
 	// --- Rueda Frontal ---
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));     //Ubicación del anillo
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));             //Escala del anillo
-	anillo(model, lightingShader);                                      //Se dibuja el anillo
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));                     //Ubicación del anillo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                             //Escala del anillo
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
+	anillo(model, lightingShader);                                                      //Se dibuja el anillo
 
 	// --- Rueda Trasera ---
-	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));    //Ubicación del anillo
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));             //Escala del anillo
-	anillo(model, lightingShader);                                      //Se dibuja el anillo
+	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));                    //Ubicación del anillo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                             //Escala del anillo
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
+	anillo(model, lightingShader);                                                      //Se dibuja el anillo
 
 
 	//  ------------- Soportes de los Anillos -------------
@@ -2455,7 +2461,9 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 1
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+	
 
 	lightingShader.setMat4("model", model);
 	glDrawArrays(GL_QUADS, 24, 48);
@@ -2465,6 +2473,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 2
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(22.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2475,6 +2484,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 3
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2485,7 +2495,8 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 4
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(67.5f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f)); 
 
 	lightingShader.setMat4("model", model);
 	glDrawArrays(GL_QUADS, 24, 48);
@@ -2495,6 +2506,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 5
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2505,6 +2517,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 6
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(112.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2515,6 +2528,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 7
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(135.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2525,7 +2539,8 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 8
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(157.5f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
+	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f)); 
 
 	lightingShader.setMat4("model", model);
 	glDrawArrays(GL_QUADS, 24, 48);
@@ -2536,6 +2551,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 1
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
 	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2546,6 +2562,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 2
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
 	model = glm::rotate(model, glm::radians(22.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2556,6 +2573,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 3
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
 	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2566,6 +2584,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 4
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
 	model = glm::rotate(model, glm::radians(67.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2576,6 +2595,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 5
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
 	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2586,6 +2606,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 6
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
 	model = glm::rotate(model, glm::radians(112.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2596,6 +2617,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 7
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
 	model = glm::rotate(model, glm::radians(135.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));    //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2606,6 +2628,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// 8
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
 	model = glm::rotate(model, glm::radians(157.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));    //Animación de Giro
 	model = glm::scale(model, glm::vec3(0.5f, 30.0f, 0.5f));
 
 	lightingShader.setMat4("model", model);
@@ -2622,6 +2645,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// Tubo central
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -3.5f));
 	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 1.0f, .0f));  //Animación de Giro
 	model = glm::scale(model, glm::vec3(1.25f, 10.0f, 1.25f));
 
 	lightingShader.setMat4("model", model);
@@ -2632,6 +2656,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// Anillo Frontal
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 1.0f, 0.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(2.0f, 1.0f, 2.0f));
 
 	lightingShader.setMat4("model", model);
@@ -2642,6 +2667,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	// Anillo Trasero
 	model = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, -7.0f));
 	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(giroRueda), glm::vec3(0.0f, 1.0f, 0.0f));   //Animación de Giro
 	model = glm::scale(model, glm::vec3(2.0f, 1.0f, 2.0f));
 
 	lightingShader.setMat4("model", model);
@@ -2752,65 +2778,98 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
 	//  ------------- Cúpulas-------------
 
 	// 1
-	lightingShader.setInt("material_diffuse", t_cafe);          //Texturas de la cúpula
+	lightingShader.setInt("material_diffuse", t_cafe);           //Texturas de la cúpula
 	lightingShader.setInt("material_specular", t_cafe_brillo);
-	model = glm::translate(model_loc, glm::vec3(15.0f, -2.5f, -3.5f));    //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));               //Escala de la cúpula
-	cupula(model, lightingShader);                                        //Se dibuja la cúpula
+
+	model = glm::rotate(model_loc, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
+	model = glm::translate(model, glm::vec3(15.0f, 0.0f, -3.5f));                           //Ubicación de la cúpula
+	model = glm::rotate(model, glm::radians(-giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));      //Rotación inversa para preservar la verticalidad
+	model = glm::translate(model, glm::vec3(0.0f, -2.5f, 0.0f));                            //Offset hacia abajo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                                 //Escala de la cúpula
+	cupula(model, lightingShader);                                                          //Se dibuja la cúpula
 
 	// 2
-	lightingShader.setInt("material_diffuse", t_morado);                    //Texturas de la cúpula
+	lightingShader.setInt("material_diffuse", t_morado);          //Texturas de la cúpula
 	lightingShader.setInt("material_specular", t_morado_brillo);
-	model = glm::translate(model_loc, glm::vec3(-15.0f, -2.5f, -3.5f));   //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));               //Escala de la cúpula
-	cupula(model, lightingShader);                                        //Se dibuja la cúpula
+
+	model = glm::rotate(model_loc, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));   //Animación de Giro
+	model = glm::translate(model, glm::vec3(-15.0f, 0.0f, -3.5f));                          //Ubicación de la cúpula
+	model = glm::rotate(model, glm::radians(-giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));      //Rotación inversa para preservar la verticalidad
+	model = glm::translate(model, glm::vec3(0.0f, -2.5f, 0.0f));                            //Offset hacia abajo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                                 //Escala de la cúpula
+	cupula(model, lightingShader);                                                          //Se dibuja la cúpula
 
 	// 3
-	lightingShader.setInt("material_diffuse", t_azul_rey);          //Texturas de la cúpula
+	lightingShader.setInt("material_diffuse", t_azul_rey);       //Texturas de la cúpula
 	lightingShader.setInt("material_specular", t_azul_rey);
-	model = glm::translate(model_loc, glm::vec3(0.0f, 12.5f, -3.5f));     //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));               //Escala de la cúpula
-	cupula(model, lightingShader);                                        //Se dibuja la cúpula
+
+	model = glm::rotate(model_loc, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));  //Animación de Giro
+	model = glm::translate(model, glm::vec3(0.0f, 15.0f, -3.5f));                          //Ubicación de la cúpula
+	model = glm::rotate(model, glm::radians(-giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));     //Rotación inversa para preservar la verticalidad
+	model = glm::translate(model, glm::vec3(0.0f, -2.5f, 0.0f));                           //Offset hacia abajo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                                //Escala de la cúpula
+	cupula(model, lightingShader);                                                         //Se dibuja la cúpula
 
 	// 4
 	lightingShader.setInt("material_diffuse", t_rojo);          //Texturas de la cúpula
 	lightingShader.setInt("material_specular", t_rojo_brillo);
-	model = glm::translate(model_loc, glm::vec3(0.0f, -17.5f, -3.5f));    //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));               //Escala de la cúpula
-	cupula(model, lightingShader);                                        //Se dibuja la cúpula
+
+	model = glm::rotate(model_loc, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));  //Animación de Giro
+	model = glm::translate(model, glm::vec3(0.0f, -15.0f, -3.5f));                         //Ubicación de la cúpula
+	model = glm::rotate(model, glm::radians(-giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));     //Rotación inversa para preservar la verticalidad
+	model = glm::translate(model, glm::vec3(0.0f, -2.5f, 0.0f));                           //Offset hacia abajo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                                //Escala de la cúpula
+	cupula(model, lightingShader);                                                         //Se dibuja la cúpula
 
 	// 5
-	lightingShader.setInt("material_diffuse", t_rosa);              //Texturas de la cúpula
+	lightingShader.setInt("material_diffuse", t_rosa);          //Texturas de la cúpula
 	lightingShader.setInt("material_specular", t_rosa_brillo);
-	model = glm::translate(model_loc, glm::vec3(10.675f, 8.175f, -3.5f));     //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
-	cupula(model, lightingShader);                                            //Se dibuja la cúpula
+
+	model = glm::rotate(model_loc, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));  //Animación de Giro
+	model = glm::translate(model, glm::vec3(10.675f, 10.675f, -3.5f));                     //Ubicación de la cúpula
+	model = glm::rotate(model, glm::radians(-giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));     //Rotación inversa para preservar la verticalidad
+	model = glm::translate(model, glm::vec3(0.0f, -2.5f, 0.0f));                           //Offset hacia abajo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                                //Escala de la cúpula
+	cupula(model, lightingShader);                                                         //Se dibuja la cúpula
 
 	// 6
-	lightingShader.setInt("material_diffuse", t_naranja);                        //Texturas de la cúpula
+	lightingShader.setInt("material_diffuse", t_naranja);         //Texturas de la cúpula
 	lightingShader.setInt("material_specular", t_naranja_brillo);
-	model = glm::translate(model_loc, glm::vec3(-10.675f, 8.175f, -3.5f));    //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
-	cupula(model, lightingShader);                                            //Se dibuja la cúpula
+
+	model = glm::rotate(model_loc, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));  //Animación de Giro
+	model = glm::translate(model, glm::vec3(-10.675f, 10.675f, -3.5f));                    //Ubicación de la cúpula
+	model = glm::rotate(model, glm::radians(-giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));     //Rotación inversa para preservar la verticalidad
+	model = glm::translate(model, glm::vec3(0.0f, -2.5f, 0.0f));                           //Offset hacia abajo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                                //Escala de la cúpula
+	cupula(model, lightingShader);                                                         //Se dibuja la cúpula
 
 	// 7
-	lightingShader.setInt("material_diffuse", t_amarillo);                        //Texturas de la cúpula
+	lightingShader.setInt("material_diffuse", t_amarillo);        //Texturas de la cúpula
 	lightingShader.setInt("material_specular", t_amarillo_brillo);
-	model = glm::translate(model_loc, glm::vec3(10.675f, -13.175f, -3.5f));   //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
-	cupula(model, lightingShader);                                            //Se dibuja la cúpula
+	 
+	model = glm::rotate(model_loc, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));  //Animación de Giro
+	model = glm::translate(model, glm::vec3(10.675f, -10.675f, -3.5f));                    //Ubicación de la cúpula
+	model = glm::rotate(model, glm::radians(-giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));     //Rotación inversa para preservar la verticalidad
+	model = glm::translate(model, glm::vec3(0.0f, -2.5f, 0.0f));                           //Offset hacia abajo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                                //Escala de la cúpula
+	cupula(model, lightingShader);                                                         //Se dibuja la cúpula
 
 	// 8
-	lightingShader.setInt("material_diffuse", t_verde);                    //Texturas de la cúpula
+	lightingShader.setInt("material_diffuse", t_verde);          //Texturas de la cúpula
 	lightingShader.setInt("material_specular", t_verde_brillo);
-	model = glm::translate(model_loc, glm::vec3(-10.675f, -13.175f, -3.5f));  //Ubicación de la cúpula
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                   //Escala de la cúpula
-	cupula(model, lightingShader);                                            //Se dibuja la cúpula
+
+	model = glm::rotate(model_loc, glm::radians(giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));  //Animación de Giro
+	model = glm::translate(model, glm::vec3(-10.675f, -10.675f, -3.5f));                   //Ubicación de la cúpula
+	model = glm::rotate(model, glm::radians(-giroRueda), glm::vec3(0.0f, 0.0f, 1.0f));     //Rotación inversa para preservar la verticalidad
+	model = glm::translate(model, glm::vec3(0.0f, -2.5f, 0.0f));                           //Offset hacia abajo
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));                                //Escala de la cúpula
+	cupula(model, lightingShader);                                                         //Se dibuja la cúpula
 }
 
 void cupula(glm::mat4 model_loc, Shader lightingShader)
 {
 	glm::mat4 model;  //Matriz para ir dibujando cada elemento
+
 
 	// ------------- Techo -------------
 	// Barrera
