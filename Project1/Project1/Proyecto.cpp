@@ -51,6 +51,8 @@ Con el Mouse se puede mover la cámara desde la cual se observa el modelo
 #include <glfw3.h>
 #include <stb_image.h>
 #include <string.h>
+#include <iostream>
+#include <fstream>
 
 #include "esfera.h"
 #include "camera.h"
@@ -74,6 +76,10 @@ void animate(void);
 void LoadTextures(void);
 unsigned int generateTextures(char*, bool);
 
+<<<<<<< HEAD
+void LoadKeyframes(string);
+=======
+>>>>>>> 423f7f2855c1bb96677319a43e4efa5848157a3a
 
 // ------------------ Prototipos de Funciones de Renderizado ------------------
 
@@ -116,6 +122,7 @@ double	deltaTime = 0.0f,
 void getResolution()
 {
 	const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+<<<<<<< HEAD
 
 	SCR_WIDTH = mode->width;
 	SCR_HEIGHT = (mode->height) - 80;
@@ -125,6 +132,17 @@ void getResolution()
 }
 
 
+=======
+
+	SCR_WIDTH = mode->width;
+	SCR_HEIGHT = (mode->height) - 80;
+
+	lastX = SCR_WIDTH / 2.0f;
+	lastY = SCR_HEIGHT / 2.0f;
+}
+
+
+>>>>>>> 423f7f2855c1bb96677319a43e4efa5848157a3a
 // ------------------ Variables para la Animación ------------------
 
 // -------- Montaña Rusa --------
@@ -151,12 +169,22 @@ float giroRueda = 0.0f;    //Ángulo de giro de la rueda de la fortuna
 int i_max_steps = 10;    // Número de fotogramas entre keyframes
 int i_curr_steps = 0;    // Contador para recorrer cada fotograma entre keyframes
 
+<<<<<<< HEAD
+bool play = false;       //Variable para dar inicio a la animación
+int playIndex = 0;
+
+int LPresionado = 0;     //Variable para evitar flickering en el botón de guardado (Tecla L)
+int PPresionado = 0;     //Variable para evitar flickering en el botón de play (Tecla P)
+
+typedef struct _frame    //Por cada variable de control se debe crear su variable auxiliar de incremento
+=======
 bool play = false;      //Variable para dar inicio a la animación
 int playIndex = 0;
 
 int LPresionado = 0;    //Variable para guardar un keyframe a la vez
 
 typedef struct _frame   //Por cada variable de control se debe crear su variable auxiliar de incremento
+>>>>>>> 423f7f2855c1bb96677319a43e4efa5848157a3a
 {
 	//Variables para GUARDAR Key Frames
 
@@ -176,17 +204,37 @@ typedef struct _frame   //Por cada variable de control se debe crear su variable
 FRAME KeyFrame[MAX_FRAMES];   //Se crea el objeto del tipo keyframe
 int FrameIndex = 0;			  // Contador para ir recorriendo cada keyframe
 
+<<<<<<< HEAD
+void saveFrame(string archivo)
+{
+	printf("FrameIndex = %d\n", FrameIndex);
+
+	// ---- Se guardan los datos del keyframe ----
+=======
 void saveFrame(void)
 {
 	printf("frameindex %d\n", FrameIndex);
+>>>>>>> 423f7f2855c1bb96677319a43e4efa5848157a3a
 
 	KeyFrame[FrameIndex].posCarroX = posCarroX;
 	KeyFrame[FrameIndex].posCarroY = posCarroY;
     KeyFrame[FrameIndex].posCarroZ = posCarroZ;
+<<<<<<< HEAD
+	KeyFrame[FrameIndex].rotCarro  = rotCarro;
+
+	FrameIndex++;   // Aumenta la cuenta global de KayFrames
+
+	// ---- Se guarda el KeyFrame en el archivo ----
+
+	ofstream file(archivo, ios::app);    // Se abre el archivo
+	file << posCarroX << 'f' << ' ' << posCarroY << 'f' << ' ' << posCarroZ << 'f' << ' ' << rotCarro << 'f' << endl;  // Se escriben los datos
+	file.close();  // Se cierra el archivo
+=======
 
 	KeyFrame[FrameIndex].rotCarro = rotCarro;
 
 	FrameIndex++;
+>>>>>>> 423f7f2855c1bb96677319a43e4efa5848157a3a
 }
 
 void resetElements(void)
@@ -207,6 +255,63 @@ void interpolation(void)
 	KeyFrame[playIndex].rotCarroInc = (KeyFrame[playIndex + 1].rotCarro - KeyFrame[playIndex].rotCarro) / i_max_steps;
 }
 
+<<<<<<< HEAD
+void LoadKeyFrames(string archivo) 
+{
+	ifstream file(archivo);  // Se abre el archivo
+
+	if (!file.is_open())     // Si ocurre un error, se notifica
+		std::cout << "No se encontro el archivo: " << archivo << '\n';
+
+	// Se limpian todos los KeyFrames
+	for (int i = 0; i < MAX_FRAMES; i++)
+	{
+		KeyFrame[i].posCarroX = 0;
+		KeyFrame[i].posCarroY = 0;
+		KeyFrame[i].posCarroZ = 0;
+
+		KeyFrame[i].posCarroXInc = 0;
+		KeyFrame[i].posCarroYInc = 0;
+		KeyFrame[i].posCarroZInc = 0;
+
+		KeyFrame[i].rotCarro = 0;
+		KeyFrame[i].rotCarroInc = 0;
+	}
+
+	//Variable para ir llenando los datos de cada KeyFrame
+	int frameActual = 0; 
+
+	//Variables para leer los datos de cada línea del archivo
+	string posX;         
+	string posY;
+	string posZ;
+	string rotacion;
+
+	while (file.good()) 
+	{
+		getline(file, posX, ' ');       //Se lee cada dato
+		getline(file, posY, ' ');
+		getline(file, posZ, ' ');
+		getline(file, rotacion, '\n');
+
+		if (file.good())
+		{
+			KeyFrame[frameActual].posCarroX = stof(posX);      //Cast de string a float
+			KeyFrame[frameActual].posCarroY = stof(posY);
+			KeyFrame[frameActual].posCarroZ = stof(posZ);
+			KeyFrame[frameActual].rotCarro = stof(rotacion);
+
+			frameActual++;  //Aumenta el contador
+
+			FrameIndex++;   //Aumenta la cuenta global de KayFrames
+		}
+	}
+
+	file.close();  //Se cierra el archivo
+}
+
+=======
+>>>>>>> 423f7f2855c1bb96677319a43e4efa5848157a3a
 
 // ------------------ Variables para la iluminación ------------------
 
@@ -1008,6 +1113,9 @@ int main()
 
 
 	// Inicialización de KeyFrames
+<<<<<<< HEAD
+	LoadKeyFrames("KeyFramesCarro.txt");
+=======
 	for (int i = 0; i < MAX_FRAMES; i++)
 	{
 		KeyFrame[i].posCarroX = 0;
@@ -1021,6 +1129,7 @@ int main()
 		KeyFrame[i].rotCarro = 0;
 		KeyFrame[i].rotCarroInc = 0;
 	}
+>>>>>>> 423f7f2855c1bb96677319a43e4efa5848157a3a
 
     // render loop
     // While the windows is not closed
@@ -1096,7 +1205,11 @@ void my_input(GLFWwindow *window)
 		rotCarro++;
 
 	// Para iniciar la animación
+<<<<<<< HEAD
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && (PPresionado == 0))
+=======
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+>>>>>>> 423f7f2855c1bb96677319a43e4efa5848157a3a
 	{
 		if (play == false && (FrameIndex > 1))
 		{
@@ -1109,13 +1222,27 @@ void my_input(GLFWwindow *window)
 		}
 		else
 			play = false;
+<<<<<<< HEAD
+
+		PPresionado = 1;   //La tecla ya está presionada
 	}
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE)
+		PPresionado = 0;
+=======
+	}
+>>>>>>> 423f7f2855c1bb96677319a43e4efa5848157a3a
 
 	// Para guardar el keyframe
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && (LPresionado == 0))
 	{
 		if (FrameIndex < MAX_FRAMES)
+<<<<<<< HEAD
+			saveFrame("KeyFramesCarro.txt");
+
+		LPresionado = 1;   //La tecla ya está presionada
+=======
 			saveFrame();
+>>>>>>> 423f7f2855c1bb96677319a43e4efa5848157a3a
 	}
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE)
 		LPresionado = 0;
