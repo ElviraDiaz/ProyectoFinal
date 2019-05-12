@@ -44,6 +44,8 @@ Con el Mouse se puede mover la cámara desde la cual se observa el modelo
 	Al mover el mouse hacia abajo, la cámara gira hacia abajo
 */
 
+// ------------------ Librerías ------------------
+
 //#define STB_IMAGE_IMPLEMENTATION
 #include <glew.h>
 #include <glfw3.h>
@@ -56,18 +58,25 @@ Con el Mouse se puede mover la cámara desde la cual se observa el modelo
 
 // Other Libs
 #include "SOIL2/SOIL2.h"
-
 using namespace std;
 
-Esfera esfera(1.0f);
+// ------------------ Prototipos de Funciones Básicas ------------------
 
-//Prototipos de funciones básicas
 void resize(GLFWwindow* window, int width, int height);
 void my_input(GLFWwindow *window);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
-// ------------- Prototipos de las funciones de renderizado ---------
+void myData(void);
+void display(Shader, Model);
+void getResolution(void);
+void animate(void);
+void LoadTextures(void);
+unsigned int generateTextures(char*, bool);
+
+
+// ------------------ Prototipos de Funciones de Renderizado ------------------
+
 void montañaRusa(glm::mat4 model_loc, Shader lightingShader, Shader modelShader, Model logo);
 void riel(glm::mat4 model_loc, float escala_x, float rotacion, Shader lightingShader);
 void carro(glm::mat4 model_loc, Shader lightingShader);
@@ -77,62 +86,146 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader);
 void cupula(glm::mat4 model_loc, Shader lightingShader);
 void anillo(glm::mat4 model_loc, Shader lightingShader);
 
+Esfera esfera(1.0f); // Objeto para renderizar esferas
 
-GLclampf bgColorRed   = 1.0;  //Color de fondo (Rojo)
-GLclampf bgColorGreen = 1.0;  //Color de fondo (Verde)
-GLclampf bgColorBlue  = 1.0;  //Color de fondo (Azul)
 
-// settings
-// Window size
+// ------------------ Variables y funciones para la cámara y la pantalla ------------------
+
+// Variables para el tamaño de la ventana
 int SCR_WIDTH = 3800;
 int SCR_HEIGHT = 7600;
 
 GLFWmonitor *monitors;
 GLuint VBO, VAO, EBO;
 
-//Camera
+// Variables para cambiar el color del fondo
+GLclampf bgColorRed = 1.0;  //Color de fondo (Rojo)
+GLclampf bgColorGreen = 1.0;  //Color de fondo (Verde)
+GLclampf bgColorBlue = 1.0;  //Color de fondo (Azul)
+
+// Cámara
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 double	lastX = 0.0f,
 		lastY = 0.0f;
 bool firstMouse = true;
 
-//Timing
+// Timing
 double	deltaTime = 0.0f,
 		lastFrame = 0.0f;
 
-//Lighting                                       //Luz tipo Posicional
-glm::vec3 lightPosition(20.0f, 50.0f, 25.0f);    //Posición de la Luz. Original: (0.0f, 3.0f, 0.0f)
-glm::vec3 lightDirection(0.0f, 0.0f, -3.0f);     //Dirección de la Luz
+void getResolution()
+{
+	const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-void myData(void);
-void display(Shader, Model);
-void getResolution(void);
-void animate(void);
-void LoadTextures(void);
-unsigned int generateTextures(char*, bool);
+	SCR_WIDTH = mode->width;
+	SCR_HEIGHT = (mode->height) - 80;
 
-//For Keyboard
-float	movX = 0.0f,
-		movY = 0.0f,
-		movZ = -5.0f,
-		rotX = 0.0f;
+	lastX = SCR_WIDTH / 2.0f;
+	lastY = SCR_HEIGHT / 2.0f;
+}
 
-// Variables para la animación
-<<<<<<< HEAD
+
+// ------------------ Variables para la Animación ------------------
+
+// -------- Montaña Rusa --------
+
 float giroSilla = 0.0f;    //Ángulo de giro de las sillas de la montaña rusa
 int giroSillaInversa = 0;  //Sentido de giro de las sillas de la montaña rusa
 
+// Variables para los Keyframes
+float posCarroX = 0.0f;
+float posCarroY = 0.0f;
+float posCarroZ = 0.0f;
+
+float rotCarro = 0.0f;
+
+
+// -------- Rueda de la Fortuna --------
+
 float giroRueda = 0.0f;    //Ángulo de giro de la rueda de la fortuna
-=======
-float giroRueda = 0.0f;
->>>>>>> 3e32d8652ead2d170e4ffeda0c30c1f5ba92cb91
+
+
+// --------> Variables y funciones para Animación por Keyframes 
+
+#define MAX_FRAMES 500   //Número máximo de keyframes
+int i_max_steps = 10;    // Número de fotogramas entre keyframes
+int i_curr_steps = 0;    // Contador para recorrer cada fotograma entre keyframes
+
+bool play = false;      //Variable para dar inicio a la animación
+int playIndex = 0;
+
+int LPresionado = 0;    //Variable para guardar un keyframe a la vez
+
+typedef struct _frame   //Por cada variable de control se debe crear su variable auxiliar de incremento
+{
+	//Variables para GUARDAR Key Frames
+
+	float posCarroX;      //Posición en el eje X del carro de la montaña rusa
+	float posCarroY;      //Posición en el eje Y del carro de la montaña rusa
+    float posCarroZ;	  //Posición en el eje Z del carro de la montaña rusa (No se usa)
+
+	float posCarroXInc;   //Variable de incremento para posCarroX
+	float posCarroYInc;   //Variable de incremento para posCarroY
+    float posCarroZInc;   //Variable de incremento para posCarroZ (No se usa)
+
+	float rotCarro;       //Rotación del carro de la montaña rusa
+	float rotCarroInc;    //Variable de incremento de rotCarro
+
+}FRAME;
+
+FRAME KeyFrame[MAX_FRAMES];   //Se crea el objeto del tipo keyframe
+int FrameIndex = 0;			  // Contador para ir recorriendo cada keyframe
+
+void saveFrame(void)
+{
+	printf("frameindex %d\n", FrameIndex);
+
+	KeyFrame[FrameIndex].posCarroX = posCarroX;
+	KeyFrame[FrameIndex].posCarroY = posCarroY;
+    KeyFrame[FrameIndex].posCarroZ = posCarroZ;
+
+	KeyFrame[FrameIndex].rotCarro = rotCarro;
+
+	FrameIndex++;
+}
+
+void resetElements(void)
+{
+	posCarroX = KeyFrame[0].posCarroX;
+	posCarroY = KeyFrame[0].posCarroY;
+    posCarroZ = KeyFrame[0].posCarroZ;
+
+	rotCarro = KeyFrame[0].rotCarro;
+}
+
+void interpolation(void)
+{
+	KeyFrame[playIndex].posCarroXInc = (KeyFrame[playIndex + 1].posCarroX - KeyFrame[playIndex].posCarroX) / i_max_steps;
+	KeyFrame[playIndex].posCarroYInc = (KeyFrame[playIndex + 1].posCarroY - KeyFrame[playIndex].posCarroY) / i_max_steps;
+    KeyFrame[playIndex].posCarroZInc = (KeyFrame[playIndex + 1].posCarroZ - KeyFrame[playIndex].posCarroZ) / i_max_steps;
+
+	KeyFrame[playIndex].rotCarroInc = (KeyFrame[playIndex + 1].rotCarro - KeyFrame[playIndex].rotCarro) / i_max_steps;
+}
+
+
+// ------------------ Variables para la iluminación ------------------
+
+// Coordenadas de Iluminación                    -- Luz tipo Posicional por Defecto --
+glm::vec3 lightPosition(20.0f, 50.0f, 25.0f);    //Posición de la Luz
+glm::vec3 lightDirection(0.0f, 0.0f, -3.0f);     //Dirección de la Luz
 
 // Para controlar la intensidad de la luz
-int CeroPresionado = 0;
+float opacidad = 32.0f;   //Variable de control
+
+int CeroPresionado = 0;   //Variables para corroborar el estado de las teclas
 int NuevePresionado = 0;
 
 // Para controlar el color de la luz
-int RPresionado = 0;
+float R = 1.0f;        //Variables de control
+float G = 1.0f;
+float B = 1.0f;
+
+int RPresionado = 0;   //Variables para corroborar el estado de las teclas
 int GPresionado = 0;
 int BPresionado = 0;
 
@@ -143,14 +236,16 @@ char Light_FragShader[100] = "shaders/shader_texture_light_pos.fs";
 //La fuente de luz se encuentra en la ubicación del sol o foco
 glm::vec3 Light_Position = lightPosition;
 
-//Estas variables son para cuando se usa luz de tipo reflector (Linterna)
-// Esta define el tamaño del círculo de luz. Aumentar su valor para que el círculo sea más grande
+// --- Estas variables son para cuando se usa luz de tipo reflector (Linterna) ---
+//  -> Esta define el tamaño del círculo de luz. Aumentar su valor para que el círculo sea más grande
 float Light_CutOff = glm::cos(glm::radians(12.5f));
-// Esta define la dirección de la luz en base a la posición de la cámara
+//  -> Esta define la dirección de la luz en base a la posición de la cámara
 glm::vec3 Light_Direction = camera.Front;
 
+int Luz_Reflector = 0;  //Por defecto, la luz es de tipo Posicional, no de Reflector
 
-//-------- Texturas --------
+
+// ------------------ Variables y funciones para Texturas ------------------
 
 // --- Difusas ---
 
@@ -160,7 +255,7 @@ unsigned int t_metal_amarillo;
 unsigned int t_piedra;
 unsigned int t_terracota;
 
-//Colores
+// Colores
 unsigned int t_negro;
 unsigned int t_cafe;
 unsigned int t_rojo;
@@ -181,7 +276,7 @@ unsigned int t_metal_amarillo_brillo;
 unsigned int t_piedra_brillo;
 unsigned int t_terracota_brillo;
 
-//Colores
+// Colores
 unsigned int t_negro_brillo;
 unsigned int t_cafe_brillo;
 unsigned int t_rojo_brillo;
@@ -193,15 +288,6 @@ unsigned int t_azul_rey_brillo;
 unsigned int t_morado_brillo;
 unsigned int t_rosa_brillo;
 unsigned int t_blanco_brillo;
-
-// ------- Propiedades de la Luz --------
-float opacidad = 32.0f;
-
-float R = 1.0f;
-float G = 1.0f;
-float B = 1.0f;
-
-int Luz_Reflector = 0;  //Por defecto, la luz es de tipo Posicional, no de Reflector
 
 unsigned int generateTextures(const char* filename, bool alfa)
 {
@@ -235,17 +321,6 @@ unsigned int generateTextures(const char* filename, bool alfa)
 	}
 
 	stbi_image_free(data);
-}
-
-void getResolution()
-{
-	const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-	SCR_WIDTH = mode->width;
-	SCR_HEIGHT = (mode->height) - 80;
-
-	lastX = SCR_WIDTH / 2.0f;
-	lastY = SCR_HEIGHT / 2.0f;
 }
 
 //Valores a colocar si la extensión de la textura es:
@@ -703,32 +778,59 @@ void myData()
 
 void animate(void)
 {
-<<<<<<< HEAD
-	// --------------- Animación Rueda de la Fortuna ---------------
-
-	giroRueda += 1.0f;     //Giro en sentido antihorario
-
-
 	// --------------- Animación de la Montaña Rusa ---------------
 
-	if (giroSillaInversa)  //Giro en sentido horario
+	if (play)
 	{
-		giroSilla -= 6.0f;
+		// Animación de las sillas 
+		if (giroSillaInversa)  //Giro en sentido horario
+		{
+			giroSilla -= 6.0f;
 
-		if (giroSilla <= 0.0f)
-			giroSillaInversa = 0;
+			if (giroSilla <= 0.0f)
+				giroSillaInversa = 0;
+		}
+		else  //Giro en sentido antihorario
+		{
+			giroSilla += 6.0f;
+
+			if (giroSilla >= 1080.0f)  //3 vueltas: 360 * 3 = 1080
+				giroSillaInversa = 1;
+		}
+
+		// Animación del carro
+		if (i_curr_steps >= i_max_steps) //¿Fin de la animación entre cuadros (frames)?
+		{
+			playIndex++;
+			if (playIndex > FrameIndex - 2)	//¿Fin de toda la animación?
+			{
+				printf("Termina la animacion\n");
+				playIndex = 0;
+				play = false;
+			}
+			else //Next frame interpolations
+			{
+				i_curr_steps = 0; //Se resetea el contador
+				interpolation();  //Interpolación
+			}
+		}
+		else
+		{
+			// Se dibuja la animación
+			posCarroX += KeyFrame[playIndex].posCarroXInc;
+			posCarroY += KeyFrame[playIndex].posCarroYInc;
+		    posCarroZ += KeyFrame[playIndex].posCarroZInc;
+
+			rotCarro += KeyFrame[playIndex].rotCarroInc;
+
+			i_curr_steps++;
+		}
+
 	}
-	else                  //Giro en sentido antihorario
-	{
-		giroSilla += 6.0f;
 
-		if (giroSilla >= 1080.0f)  //3 vueltas: 360 * 3 = 1080
-			giroSillaInversa = 1;
-	}
+	// --------------- Animación de la Rueda de la Fortuna ---------------
 
-=======
-	giroRueda += 1.0f;
->>>>>>> 3e32d8652ead2d170e4ffeda0c30c1f5ba92cb91
+	giroRueda += 1.0f;  //Giro en sentido antihorario
 }
 
 void display(Shader modelShader, Model batarang)
@@ -818,19 +920,19 @@ void display(Shader modelShader, Model batarang)
 
 	// ------------------------- Zona de Dibujo -------------------------
 
-	// ------------ Montaña Rusa  ------------
+	// ------------ Montaña Rusa ------------
 	glBindVertexArray(VAO);
 	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)); //Ubicación de la montaña rusa
 	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));           //Escala de toda la montaña
 	montañaRusa(model_loc, lightingShader, modelShader, batarang);            //Se dibuja la montaña
 
 	
-	// ------------ Rueda de la Fortuna  ------------
+	// ------------ Rueda de la Fortuna ------------
 	glBindVertexArray(VAO);
 	lightingShader.use();
 	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 10.0f, -1.5f));  //Ubicación de la rueda de la fortuna
-	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));            //Escala de toda la rueda
-	ruedaDeLaFortuna(model_loc, lightingShader);                               //Se dibuja la rueda
+	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));               //Escala de toda la rueda
+	ruedaDeLaFortuna(model_loc, lightingShader);                                  //Se dibuja la rueda
 
 	/*
 	// Wea
@@ -841,9 +943,8 @@ void display(Shader modelShader, Model batarang)
 	lightingShader.setInt("material_specular", t_azul_brillo);
 	esfera.render();
 	*/
-	
 
-	// ------------- Luz ---------------
+	// ------------- Sol ---------------
 	lampShader.use();
 	lampShader.setMat4("view", view);
 	lampShader.setMat4("projection", projection);
@@ -899,11 +1000,27 @@ int main()
 	esfera.init();
 	glEnable(GL_DEPTH_TEST);
 
-	//Se crea el chader para cargar los modelos
+	// Se crea el chader para cargar los modelos
 	Shader modelShader("Shaders/modelLoading.vs", "Shaders/modelLoading.fs");
 	
-	//Se cargan los modelos a utilizar
+	// Se cargan los modelos a utilizar
 	Model batarang = ((char *)"Models/Batarang/INJ_iOS_WEAPON_Batman's_Batarang_Dawn_Of_Justice.obj");
+
+
+	// Inicialización de KeyFrames
+	for (int i = 0; i < MAX_FRAMES; i++)
+	{
+		KeyFrame[i].posCarroX = 0;
+		KeyFrame[i].posCarroY = 0;
+	    KeyFrame[i].posCarroZ = 0;
+
+		KeyFrame[i].posCarroXInc = 0;
+		KeyFrame[i].posCarroYInc = 0;
+	    KeyFrame[i].posCarroZInc = 0;
+
+		KeyFrame[i].rotCarro = 0;
+		KeyFrame[i].rotCarroInc = 0;
+	}
 
     // render loop
     // While the windows is not closed
@@ -946,9 +1063,11 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void my_input(GLFWwindow *window)
 {
+	// Cerrar la ventana
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
+	// Movimiento de la cámara
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.ProcessKeyboard(FORWARD, (float)deltaTime * 5);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -958,8 +1077,50 @@ void my_input(GLFWwindow *window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, (float)deltaTime * 5);
 
+	// --------------- Animación por keyframes ---------------
 
-	// --------------- Tipo de Iluminación
+	// Movimiento 
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		posCarroX -= 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		posCarroX += 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		posCarroY -= 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		posCarroY += 0.1f;
+
+	// Rotación de la Rodilla Izquierda
+	if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
+		rotCarro--;
+	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
+		rotCarro++;
+
+	// Para iniciar la animación
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+	{
+		if (play == false && (FrameIndex > 1))
+		{
+			resetElements();
+			interpolation(); //Primer Interpolation	
+
+			play = true;
+			playIndex = 0;
+			i_curr_steps = 0;
+		}
+		else
+			play = false;
+	}
+
+	// Para guardar el keyframe
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && (LPresionado == 0))
+	{
+		if (FrameIndex < MAX_FRAMES)
+			saveFrame();
+	}
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE)
+		LPresionado = 0;
+
+	// --------------- Tipo de Iluminación ---------------
 
 	// Luz Posicional
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
@@ -1007,7 +1168,7 @@ void my_input(GLFWwindow *window)
 	}
 
 
-	// --------------- Intensidad de la luz
+	// --------------- Intensidad de la Luz ---------------
 	
 	// Aumenta
 	if ((glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) && (CeroPresionado == 0))
@@ -1028,7 +1189,7 @@ void my_input(GLFWwindow *window)
 		NuevePresionado = 0;
 
 
-	// ------- Color de la luz
+	// --------------- Color de la luz ---------------
 
 	// Aumenta el Rojo
 	if ((glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) && (RPresionado == 0))
@@ -1095,7 +1256,6 @@ void resize(GLFWwindow* window, int width, int height)
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	
 	if (firstMouse)
 	{
 		lastX = xpos;
@@ -1119,6 +1279,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	camera.ProcessMouseScroll(yoffset);
 }
 
+
+// ------------------> Implementación de funciones de Renderizado <------------------
 
 void montañaRusa(glm::mat4 model_loc, Shader lightingShader, Shader modelShader, Model logo)
 {
@@ -1277,11 +1439,12 @@ void montañaRusa(glm::mat4 model_loc, Shader lightingShader, Shader modelShader,
 
 	glm::mat4 ubicacion_carro = glm::mat4(1.0f);
 
-	model = glm::translate(model_loc, glm::vec3(19.75f, 17.5f, -5.0f));           //Se parte de Riel 1
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));  //Rotación en X
-	ubicacion_carro = model;                                                      //Obtenemos las coordenadas del carro a lo largo del recorrido
-	//model = glm::scale(model, glm::vec3(40.0f, 1.0f, 14.0f));                   //Escalado del carro
-	carro(model, lightingShader);                                                 //Se manda a dibujar todo el carro
+	model = glm::translate(model_loc, glm::vec3(19.75f, 17.5f, -5.0f));                //Se parte de Riel 1
+	model = glm::translate(model, glm::vec3(posCarroX, posCarroY, posCarroZ));         //Se desplaza al keyframe correspondiente
+	model = glm::rotate(model, glm::radians(rotCarro), glm::vec3(0.0f, 0.0f, 1.0f));   //Rotación en X
+	ubicacion_carro = model;                                                           //Obtenemos las coordenadas del carro a lo largo del recorrido
+	//model = glm::scale(model, glm::vec3(40.0f, 1.0f, 14.0f));                        //Escalado del carro
+	carro(model, lightingShader);                                                      //Se manda a dibujar todo el carro
 
 
 	// ------------ Sillas del Carro  ------------
