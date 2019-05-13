@@ -1089,23 +1089,21 @@ void display(Shader modelShader, Model modelo[])
 
 	// ------------------------- Zona de Dibujo -------------------------
 
-
 	// ------------ Montaña Rusa ------------
 	glBindVertexArray(VAO);
-	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(55.0f, 0.0f, 0.0f));              //Ubicación de la montaña rusa
+	lightingShader.use();
+	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(55.0f, 10.0f, -5.0f));             //Ubicación de la montaña rusa
 	model_loc = glm::rotate(model_loc, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, .0f));    //Rotación de la montaña rusa
-	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));                        //Escala de toda la montaña
-	montañaRusa(model_loc, lightingShader, lampShader, modelShader, modelo[0]);            //Se dibuja la montaña
-
+	model_loc = glm::scale(model_loc, glm::vec3(2.0f));                                      //Escala de toda la montaña
+	montañaRusa(model_loc, lightingShader, lampShader, modelShader, modelo[0]);              //Se dibuja la montaña
 
 	// ------------ Rueda de la Fortuna ------------
 	glBindVertexArray(VAO);
 	lightingShader.use();
-	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(-95.0f, 10.5f, 60.0f));           //Ubicación de la rueda de la fortuna
-	model_loc = glm::rotate(model_loc, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));   //Rotación de la rueda de la fortuna
-	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));                         //Escala de toda la rueda
-	ruedaDeLaFortuna(model_loc, lightingShader, lampShader);                                //Se dibuja la rueda
-
+	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(-110.0f, 32.5f, 65.0f));            //Ubicación de la rueda de la fortuna
+	model_loc = glm::rotate(model_loc, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));    //Rotación de la rueda de la fortuna
+	model_loc = glm::scale(model_loc, glm::vec3(2.0f));                                      //Escala de toda la rueda
+	ruedaDeLaFortuna(model_loc, lightingShader, lampShader);                                 //Se dibuja la rueda
 
 	// ------------- Sol / Luna ---------------
 	lampShader.use();
@@ -1121,8 +1119,7 @@ void display(Shader modelShader, Model modelo[])
 	model = glm::scale(model, glm::vec3(2.0f));
 	lampShader.setMat4("model", model);
 	esfera.render();       //Sol redondo
-
-
+	
 	// ------------------- MODELOS -------------------
 	modelShader.use();
 
@@ -1134,56 +1131,52 @@ void display(Shader modelShader, Model modelo[])
 	modelShader.setMat4("model", model);
 	modelo[1].Draw(modelShader);
 
-	
-
 	// ------------- Estadio Pokemon -------------
 	model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::translate(model, glm::vec3(70.0f, -70.0f, -14.0f));
-	model = glm::scale(model, glm::vec3(0.002f));
+	model = glm::translate(model, glm::vec3(70.0f, -70.0f, -10.0f));
+	model = glm::scale(model, glm::vec3(0.00305f));
 	modelShader.setMat4("model", model);
 	modelo[2].Draw(modelShader);
 
 	// ------------- Squirtle -------------
 	model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(-50.0f, 13.5f, 0.0f));
+	model = glm::translate(model, glm::vec3(-50.0f, 13.5f, -15.0f));
 	model = glm::scale(model, glm::vec3(1.5f));
 	modelShader.setMat4("model", model);
 	modelo[3].Draw(modelShader);
 
 	// ------------- Charmander -------------
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-77.5f, -13.5f, -22.0f));
+	model = glm::translate(model, glm::vec3(-77.5f, -13.5f, -2.0f));
 	model = glm::scale(model, glm::vec3(1.5f));
 	modelShader.setMat4("model", model);
 	modelo[4].Draw(modelShader);
 
 	// ------------- Vaporeon ------------- 
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-62.5f, -13.5f, -25.0f));
+	model = glm::translate(model, glm::vec3(-57.5f, -13.5f, -5.0f));
 	model = glm::scale(model, glm::vec3(0.1f));
 	modelShader.setMat4("model", model);
 	modelo[5].Draw(modelShader);
 
 	// ------------- Pikachu ------------- 
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-85.0f, -13.5f, -5.0f));
+	model = glm::translate(model, glm::vec3(-85.0f, -13.5f, 15.0f));
 	model = glm::scale(model, glm::vec3(0.075f));
 	modelShader.setMat4("model", model);
 	modelo[6].Draw(modelShader);	
 
 	// ------------- Zapdos -------------
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-60.0f, 20.0f, -5.0f));
+	model = glm::translate(model, glm::vec3(-60.0f, 20.0f, 15.0f));
 	model = glm::translate(model, glm::vec3(posZapdosX, posZapdosY, posZapdosZ));
 	model = glm::rotate(model, glm::radians(rotZapdos), glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(0.7f));
 	modelShader.setMat4("model", model);
 	modelo[7].Draw(modelShader);
-
-	/**/
 
 	// ------------- Casa del Terror -------------
 	model = glm::mat4(1.0f);
@@ -1235,33 +1228,160 @@ void display(Shader modelShader, Model modelo[])
 	model = glm::scale(model, glm::vec3(0.1f));
 	modelShader.setMat4("model", model);
 	modelo[11].Draw(modelShader);
-
-	//---------------Castillo----------------------
+	
+	// ------------- Castillo -------------
 	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(40.0f, -12.0f, 105.0f));
 	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(100.0f, -14.0f, -40.0f));
-	model = glm::scale(model, glm::vec3(0.8f));
+	model = glm::scale(model, glm::vec3(0.9f));
 	modelShader.setMat4("model", model);
 	modelo[12].Draw(modelShader);
 
-	/*
-	//otro
-	//model = glm::mat4(1.0f);
-	//model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	//model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(-65.0f, 10.0f, -5.0f));
-	//model = glm::scale(model, glm::vec3(0.8f, 0.8f, 0.8f));
-	//model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-	//model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
-	//model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
-	//model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
-	//model = glm::scale(model, glm::vec3(0.002f, 0.002f, 0.002f));
+	// ------------- Mickey -------------
+	model = glm::translate(model, glm::vec3(10.0f, 0.0f, 30.0f));
+	model = glm::scale(model, glm::vec3(0.06f));
 	modelShader.setMat4("model", model);
-	modelo[8].Draw(modelShader);
-	*/
+	modelo[13].Draw(modelShader);
 
+	// ------------- Mickey1 -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(37.5f, -12.0f, 110.0f));
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.18f));
+	modelShader.setMat4("model", model);
+	modelo[14].Draw(modelShader);
 
+	// ------------- Minnie -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(12.5f, -12.0f, 95.0f));
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(9.0f));
+	modelShader.setMat4("model", model);
+	modelo[15].Draw(modelShader);
+	
+	// ------------- Minnie1 -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(37.5f, -12.5f, 97.5f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.085f));
+	modelShader.setMat4("model", model);
+	modelo[16].Draw(modelShader);
+
+	// ------------- Hombre -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-30.0f, -12.5f, 10.0f));
+	model = glm::scale(model, glm::vec3(0.065f));
+	modelShader.setMat4("model", model);
+	modelo[17].Draw(modelShader);
+
+	// ------------- Carro helados -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-20.0f, -12.5f, 10.0f));
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.065f));
+	modelShader.setMat4("model", model);
+	modelo[18].Draw(modelShader);
+
+	// ------------- Gato Negro -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(19.0f, -11.8f, -70.0f));
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.1f));
+	modelShader.setMat4("model", model);
+	modelo[19].Draw(modelShader);
+
+	// ------------- Perro -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(19.0f, -11.5f, 60.0f));
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.09f));
+	modelShader.setMat4("model", model);
+	modelo[20].Draw(modelShader);
+
+	// ------------- Gato -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-75.0f, -9.0f, 60.0f));
+	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.1f));
+	modelShader.setMat4("model", model);
+	modelo[21].Draw(modelShader);
+
+	// ------------- Juego Basket -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(35.0f, -12.5f, 50.0f));
+	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.5f));
+	modelShader.setMat4("model", model);
+	modelo[22].Draw(modelShader);
+
+	// ------------- puesto comida -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-75.0f, -11.5f, 103.0f));
+	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.1f));
+	modelShader.setMat4("model", model);
+	modelo[23].Draw(modelShader);
+
+	// ------------- Vendedor de Comida -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-75.0f, -11.5f, 110.0f));
+	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(4.1f));
+	modelShader.setMat4("model", model);
+	modelo[24].Draw(modelShader);
+
+	// ------------- Mujer -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-75.0f, -7.5f, 95.0f));
+	model = glm::scale(model, glm::vec3(5.0f));
+	modelShader.setMat4("model", model);
+	modelo[25].Draw(modelShader);
+
+	// ------------- Árboles (Tipo 1) -------------
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(5.0f, -10.0f, -80.0f));
+	model = glm::scale(model, glm::vec3(0.15f, 0.25f, 0.15f));
+	modelShader.setMat4("model", model);
+	modelo[26].Draw(modelShader);
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-105.0f, -10.0f, 117.5f));
+	model = glm::scale(model, glm::vec3(0.15f, 0.25f, 0.15f));
+	modelShader.setMat4("model", model);
+	modelo[26].Draw(modelShader);
+
+	// ------------- Árboles (Tipo 3) -------------
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(85.0f, -13.0f, -70.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 1.3f, 1.0f));
+	modelShader.setMat4("model", model);
+	modelo[27].Draw(modelShader);
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-125.0f, -14.5f, -10.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 1.3f, 1.0f));
+	modelShader.setMat4("model", model);
+	modelo[27].Draw(modelShader);
+
+	// ------------- Árbol (Tipo 4) -------------
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(5.0f, -12.0f, 12.0f));
+	model = glm::scale(model, glm::vec3(7.0f));
+	modelShader.setMat4("model", model);
+	modelo[28].Draw(modelShader);
+
+	// ------------- Batman -------------
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-90.0f, -13.0f, 25.0f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(8.0f));
+	modelShader.setMat4("model", model);
+	modelo[30].Draw(modelShader);
 
 	glBindVertexArray(0);
 }
@@ -1321,16 +1441,32 @@ int main()
 	Model Vaporeon((char *)"Models/Vaporeon/vaporeon.obj", 1);
 	Model Pikachu((char *)"Models/Pikachu/pikachu.obj", 1);
 	Model Zapdos((char *)"Models/Zapdos/zapados-pokemon-go.obj", 1);
-	Model Casona((char *)"Models/CASONAOPCIONES/Cabania/farmhouse_obj.obj", 1);
-	//Model Casona((char *)"Models/CASONAOPCIONES/WoodenCabin/WoodenCabinObj.obj", 1);
-	Model womanGhost((char *)"Models/CASONAOPCIONES/womanGhost/skghostmesh.obj", 1);
-	Model treeGhost((char *)"Models/CASONAOPCIONES/Tree Ghost/Tree Ghost.obj", 0);
+	Model Casona((char *)"Models/Cabania/farmhouse_obj.obj", 1);
+	Model womanGhost((char *)"Models/womanGhost/skghostmesh.obj", 1);
+	Model treeGhost((char *)"Models/Tree Ghost/Tree Ghost.obj", 0);
+	Model pasto1((char *)"Models/pasto1/Grass.obj", 0);
 	Model Castillo((char *)"Models/Castillo/Castle OBJ.obj", 1);
-	Model pasto1((char *)"Models/CASONAOPCIONES/pasto1/Grass.obj", 1);
-	
+	Model Mickey((char *)"Models/Mickey Mouse/Mickey Mouse.obj", 1);
+	Model Mickey1((char *)"Models/mickeyHT/mickey.obj", 1);
+	Model Minnie((char *)"Models/Minnie Mouse/MinnieMouse.obj", 1);
+	Model Minnie1((char *)"Models/Minnie Mouse-Princess/Minnie Mouse.obj", 0);
+	Model Hombre((char *)"Models/Business_Man/GTP_BMan_Jack_07_Stg_Lsn_Adl_Ccs_Gry_Mgr.obj", 1);
+	Model CarritoHelados((char *)"Models/CarritoHelados/13924_Ice_Cream_vending_Cart_v2_l2.obj", 1);
+	Model GatoNegro((char *)"Models/Gato2/12222_Cat_v1_l3.obj", 1);
+	Model Perro((char *)"Models/perro/12226_Dog_v2_l3.obj", 1);
+	Model Gato((char *)"Models/Gato/cat.obj", 0);
+	Model juegoBasket((char *)"Models/Game Basketball/basketball.obj", 1);
+	Model puestoComida((char *)"Models/Puesto_comida/city_stall.obj", 1);
+	Model vendedorComida((char *)"Models/VendedorComida/BIO-I_PC_N.P.C_Food_Vendor.obj", 0);
+	Model Mujer((char *)"Models/mujer/Scan-17.obj", 1);
+	Model Tree((char *)"Models/Tree/N64_Tree.obj", 1);
+	Model Tree3((char *)"Models/Tree3/n64tree.obj", 1);
+	Model Tree4((char *)"Models/Tree4/Basic Tree 1.obj", 1); 
+	Model Batman((char *)"Models/Batman/batman.obj", 1);
+	Model Batman2((char *)"Models/Batman2/B-AO_iOS_HERO_Bruce_Wayne_Batman_Long_Halloween.obj", 0);
 
 	//Se guardan todos los modelos en un arreglo
-	Model modelo[] = {batarang, pasto, estadioPokemon, Squirtle, Charmander, Vaporeon, Pikachu, Zapdos, Casona, womanGhost, treeGhost, pasto1, Castillo };
+	Model modelo[] = { batarang, pasto, estadioPokemon, Squirtle, Charmander, Vaporeon, Pikachu, Zapdos, Casona, womanGhost, treeGhost, pasto1, Castillo, Mickey, Mickey1, Minnie, Minnie1, Hombre, CarritoHelados, GatoNegro, Perro, Gato, juegoBasket, puestoComida, vendedorComida, Mujer, Tree, Tree3, Tree4, Batman, Batman2 };
 
 	// Inicialización de KeyFrames
 	LoadKeyFrames(keyFrameCarro, frameIndexCarroPtr, "KeyFramesCarro.txt");
