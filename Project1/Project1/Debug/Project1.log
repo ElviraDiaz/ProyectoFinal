@@ -1,4 +1,4 @@
 ﻿  Proyecto.cpp
-c:\users\adan\desktop\montaña rusa\project1\project1\proyecto.cpp(1330): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-c:\users\adan\desktop\montaña rusa\project1\project1\proyecto.cpp(1337): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+c:\users\adan\desktop\montaña rusa\project1\project1\proyecto.cpp(1413): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+c:\users\adan\desktop\montaña rusa\project1\project1\proyecto.cpp(1420): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
   Project1.vcxproj -> C:\Users\Adan\Desktop\Montaña Rusa\Project1\Debug\Project1.exe

@@ -42,7 +42,7 @@ void main()
     
     // attenuation
     float distance    = length(light.position - FragPos);
-    float attenuation = 150.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+    float attenuation = 200.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
     //Aumentar el numerador de "attenuation" para que la luz sea más brillante, disminuirlo para opacarla
    
 
