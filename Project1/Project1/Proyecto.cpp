@@ -56,7 +56,7 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
 void myData(void);
-void display(Shader, Model);
+void display(Shader, Model[]);
 void getResolution(void);
 void animate(void);
 void LoadTextures(void);
@@ -890,7 +890,7 @@ void animate(void)
 	giroRueda += 1.0f;  //Giro en sentido antihorario
 }
 
-void display(Shader modelShader, Model batarang)
+void display(Shader modelShader, Model modelo[])
 {
 	//Matriz de modelo, vista t proyección
 	glm::mat4 model = glm::mat4(1.0f);		//Initialize Matrix, Use this matrix for individual models
@@ -984,21 +984,23 @@ void display(Shader modelShader, Model batarang)
 
 	// ------------------------- Zona de Dibujo -------------------------
 
+
 	// ------------ Montaña Rusa ------------
 	glBindVertexArray(VAO);
 	model_loc = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, .0f));    //Rotación de la montaña rusa
-	model_loc = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));                          //Ubicación de la montaña rusa
+	model_loc = glm::translate(model_loc, glm::vec3(9.0f, 0.0f, 0.0f));                          //Ubicación de la montaña rusa
 	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));                              //Escala de toda la montaña
-	montañaRusa(model_loc, lightingShader, lampShader, modelShader, batarang);                   //Se dibuja la montaña
+	montañaRusa(model_loc, lightingShader, lampShader, modelShader, modelo[0]);                  //Se dibuja la montaña
 
-	
+
 	// ------------ Rueda de la Fortuna ------------
 	glBindVertexArray(VAO);
 	lightingShader.use();
-	model_loc = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));    //Rotación de la rueda de la fortuna
-	model_loc = glm::translate(model_loc, glm::vec3(50.0f, 10.5f, -1.5f));                        //Ubicación de la rueda de la fortuna
+	model_loc = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));   //Rotación de la rueda de la fortuna
+	model_loc = glm::translate(model_loc, glm::vec3(-45.0f, 9.5f, 55.0f));                        //Ubicación de la rueda de la fortuna
 	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));                               //Escala de toda la rueda
 	ruedaDeLaFortuna(model_loc, lightingShader, lampShader);                                      //Se dibuja la rueda
+
 
 	// ------------- Sol / Luna ---------------
 	lampShader.use();
@@ -1015,37 +1017,133 @@ void display(Shader modelShader, Model batarang)
 	lampShader.setMat4("model", model);
 	esfera.render();       //Sol redondo
 
+
+	// ------------------- MODELOS -------------------
+	modelShader.use();
+
+	//  ------------- Pasto -------------
+	model = glm::mat4(1.0f);
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(-20.0f, -16.0f, -20.0f));
+	model = glm::scale(model, glm::vec3(0.8f, 0.8f, 0.8f));
+	modelShader.setMat4("model", model);
+	modelShader.setMat4("view", view);
+	modelShader.setMat4("projection", projection);
+	modelo[1].Draw(modelShader);
+
+	// ------------- Estadio Pokemon -------------
+	model = glm::mat4(1.0f);
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::translate(model, glm::vec3(70.0f, -70.0f, -14.0f));
+	model = glm::scale(model, glm::vec3(0.002f, 0.002f, 0.002f));
+	modelShader.setMat4("model", model);
+	modelShader.setMat4("view", view);
+	modelShader.setMat4("projection", projection);
+	modelo[2].Draw(modelShader);
+
+	// ------------- Squirtle -------------
+	model = glm::mat4(1.0f);
+	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(-60.0f, 14.0f, -20.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	modelShader.setMat4("model", model);
+	modelShader.setMat4("view", view);
+	modelShader.setMat4("projection", projection);
+	modelo[3].Draw(modelShader);
+
+	// ------------- Charmander -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-95.0f, -13.5f, -25.0f));
+	model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+	modelShader.setMat4("model", model);
+	modelShader.setMat4("view", view);
+	modelShader.setMat4("projection", projection);
+	modelo[4].Draw(modelShader);
+
+	// ------------- Vaporeon ------------- 
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-65.0f, -13.5f, -25.0f));
+	model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+	modelShader.setMat4("model", model);
+	modelShader.setMat4("view", view);
+	modelShader.setMat4("projection", projection);
+	modelo[5].Draw(modelShader);
+
+	// ------------- Pikachu ------------- 
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-75.0f, -13.5f, -5.0f));
+	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+	modelShader.setMat4("model", model);
+	modelShader.setMat4("view", view);
+	modelShader.setMat4("projection", projection);
+	modelo[6].Draw(modelShader);	
+
+	// ------------- Zapdos -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-65.0f, 20.0f, -25.0f));
+	model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
+	modelShader.setMat4("model", model);
+	modelShader.setMat4("view", view);
+	modelShader.setMat4("projection", projection);
+	modelo[7].Draw(modelShader);
+
+	// ------------- Casona -------------
+	model = glm::mat4(1.0f);
+
+	//otro
+	//model = glm::mat4(1.0f);
+	//model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(-65.0f, 10.0f, -5.0f));
+	//model = glm::scale(model, glm::vec3(0.8f, 0.8f, 0.8f));
+	//model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	//model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
+	//model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+	//model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+	//model = glm::scale(model, glm::vec3(0.002f, 0.002f, 0.002f));
+	modelShader.setMat4("model", model);
+	modelShader.setMat4("view", view);
+	modelShader.setMat4("projection", projection);
+	modelo[8].Draw(modelShader);
+
+
+
+
+
+
 	glBindVertexArray(0);
 }
 
 int main()
 {
-    // glfw: initialize and configure
-    // ------------------------------
-    glfwInit();
-    /*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
+	// glfw: initialize and configure
+	// ------------------------------
+	glfwInit();
+	/*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
 
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 #endif
 
-    // glfw window creation
-    // --------------------
+	// glfw window creation
+	// --------------------
 	monitors = glfwGetPrimaryMonitor();
 	getResolution();
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Proyecto", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Proyecto", NULL, NULL);
+	if (window == NULL)
+	{
+		std::cout << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
 	glfwSetWindowPos(window, 0, 30);
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, resize);
+	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, resize);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
@@ -1066,6 +1164,18 @@ int main()
 
 	// Se cargan los modelos a utilizar
 	Model batarang((GLchar *)"Models/Batarang/INJ_iOS_WEAPON_Batman's_Batarang_Dawn_Of_Justice.obj", 0);
+	Model pasto((char *)"Models/Pasto/pasto.obj", 1);
+	Model estadioPokemon((char *)"Models/Stadium/10093_Wembley_stadion_V3_Iteration0.obj", 1);
+	Model Squirtle((char *)"Models/Squirtle/squirtle-pokemon-go.obj", 1);
+	Model Charmander((char *)"Models/Charmander/charmander.obj", 1);
+	Model Vaporeon((char *)"Models/Vaporeon/vaporeon.obj", 1);
+	Model Pikachu((char *)"Models/Pikachu/pikachu.obj", 1);
+	Model Zapdos((char *)"Models/Zapdos/zapados-pokemon-go.obj", 1);
+	Model Casona((char *)"Models/CASONAOPCIONES/Cabania/farmhouse_obj.obj", 1);
+	//Model Casona((char *)"Models/CASONAOPCIONES/WoodenCabin/WoodenCabinObj.obj", 1);
+
+	//Se guardan todos los modelos en un arreglo
+	Model modelo[] = {batarang, pasto, estadioPokemon, Squirtle, Charmander, Vaporeon, Pikachu, Zapdos, Casona};
 
 
 	// Inicialización de KeyFrames
@@ -1091,7 +1201,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//Mi función de dibujo
-		display(modelShader, batarang);
+		display(modelShader, modelo);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
