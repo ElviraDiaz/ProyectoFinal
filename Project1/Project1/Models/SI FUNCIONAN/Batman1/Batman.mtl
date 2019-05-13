@@ -1,0 +1,34 @@
+newmtl color_1b1918
+Kd 0.0941176 0.0980392 0.105882
+newmtl color_222222
+Kd 0.133333 0.133333 0.133333
+newmtl color_2b2625_texture_mat0_c
+Kd 0.145098 0.14902 0.168627
+map_Kd mat0_c.png
+newmtl color_2b2625
+Kd 0.145098 0.14902 0.168627
+newmtl color_38312e
+Kd 0.180392 0.192157 0.219608
+newmtl color_cccccc_texture_mat3_c
+Kd 0.8 0.8 0.8
+map_Kd mat3_c.png
+newmtl color_cccccc_texture_mat0_c
+Kd 0.8 0.8 0.8
+map_Kd mat0_c.png
+newmtl color_cccccc_texture_mat1_c
+Kd 0.8 0.8 0.8
+map_Kd mat1_c.png
+newmtl color_cccccc_texture_mat3_r
+Kd 0.8 0.8 0.8
+map_Kd mat3_r.png
+newmtl color_cccccc_texture_mat2_c
+Kd 0.8 0.8 0.8
+map_Kd mat2_c.png
+newmtl color_cccccc_texture_mat0_c
+Kd 0.8 0.8 0.8
+map_Kd mat0_c.jpg
+newmtl color_cccccc_texture_mat3_c
+Kd 0.8 0.8 0.8
+map_Kd mat3_c.png
+newmtl color_000000
+Kd 0 0 0

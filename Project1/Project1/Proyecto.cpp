@@ -62,8 +62,6 @@ void animate(void);
 void LoadTextures(void);
 unsigned int generateTextures(char*, bool);
 
-void LoadKeyframes(string);
-
 // ------------------ Prototipos de Funciones de Renderizado ------------------
 
 void montañaRusa(glm::mat4 model_loc, Shader lightingShader, Shader lampShader, Shader modelShader, Model logo);
@@ -125,7 +123,6 @@ int giroSillaInversa = 0;  //Sentido de giro de las sillas de la montaña rusa
 float posCarroX = 0.0f;
 float posCarroY = 0.0f;
 float posCarroZ = 0.0f;
-
 float rotCarro = 0.0f;
 
 
@@ -134,77 +131,114 @@ float rotCarro = 0.0f;
 float giroRueda = 0.0f;    //Ángulo de giro de la rueda de la fortuna
 
 
+// -------- Casa del terror --------
+
+int fantasmaMujerSube = 1;         //Variable de control
+float posMujerFantasmaY = 0.0f;    //Posición de la mujer fantasma
+
+int fantasmaVuela = 1;        //Variable de control
+float posFantasmaX = 0.0f;    //Posición  en X del fantasma
+float posFantasmaZ = 0.0f;    //Posición  en Z del fantasma
+
+
+// -------- Pokémones --------
+
+// Variables para los Keyframes
+float posZapdosX = 0.0f;
+float posZapdosY = 0.0f;
+float posZapdosZ = 0.0f;
+float rotZapdos = 0.0f;
+
+
 // --------> Variables y funciones para Animación por Keyframes 
 
-#define MAX_FRAMES 500   //Número máximo de keyframes
-int i_max_steps = 7;    // Número de fotogramas entre keyframes
-int i_curr_steps = 0;    // Contador para recorrer cada fotograma entre keyframes
+#define MAX_FRAMES 200   //Número máximo de keyframes
 
-bool play = false;       //Variable para dar inicio a la animación
-int playIndex = 0;
+int F1Presionado = 0;     //Variable para evitar flickering en el botón de guardado del carro (Tecla F1)
+int F2Presionado = 0;     //Variable para evitar flickering en el botón de guardado del zapdos (Tecla F2)
 
-int F1Presionado = 0;     //Variable para evitar flickering en el botón de guardado (Tecla L)
-int PPresionado = 0;     //Variable para evitar flickering en el botón de play (Tecla P)
+int PPresionado = 0;     //Variable para evitar flickering en el botón de play del carro (Tecla P)
+int OPresionado = 0;     //Variable para evitar flickering en el botón de play del zapdos (Tecla O)
 
 typedef struct _frame    //Por cada variable de control se debe crear su variable auxiliar de incremento
 {
 	//Variables para GUARDAR Key Frames
 
-	float posCarroX;      //Posición en el eje X del carro de la montaña rusa
-	float posCarroY;      //Posición en el eje Y del carro de la montaña rusa
-    float posCarroZ;	  //Posición en el eje Z del carro de la montaña rusa (No se usa)
+	float posX;      //Posición en el eje X
+	float posY;      //Posición en el eje Y
+    float posZ;	     //Posición en el eje Z
 
-	float posCarroXInc;   //Variable de incremento para posCarroX
-	float posCarroYInc;   //Variable de incremento para posCarroY
-    float posCarroZInc;   //Variable de incremento para posCarroZ (No se usa)
+	float posXInc;   //Variable de incremento para posX
+	float posYInc;   //Variable de incremento para posY
+    float posZInc;   //Variable de incremento para posZ
 
-	float rotCarro;       //Rotación del carro de la montaña rusa
-	float rotCarroInc;    //Variable de incremento de rotCarro
+	float rot;       //Rotación del modelo
+	float rotInc;    //Variable de incremento de rot
 
 }FRAME;
 
-FRAME KeyFrame[MAX_FRAMES];   //Se crea el objeto del tipo keyframe
-int FrameIndex = 0;			  // Contador para ir recorriendo cada keyframe
 
-void saveFrame(string archivo)
+// --- Variables para los keyframes del carro de la montaña rusa ---
+FRAME keyFrameCarro[MAX_FRAMES];              //Se crea el objeto del tipo keyframe
+int frameIndexCarro = 0;                      //Varible que cuenta el número de frames que se tienen en keyFrameCarro
+int* frameIndexCarroPtr = &frameIndexCarro;   
+int i_curr_steps_Carro = 0;                   // Contador para recorrer cada fotograma entre keyframes
+int i_max_steps_Carro = 7;                    // Número de fotogramas entre keyframes
+
+bool playCarro = false;   //Variable para dar inicio a la animación
+int  playIndexCarro = 0;  //Variable para ir recorriendo cada keyFrame
+
+
+// --- Variables para los keyframes del Zapdos ---
+FRAME keyFrameZapdos[MAX_FRAMES];              //Se crea el objeto del tipo keyframe
+int frameIndexZapdos = 0;                      //Varible que cuenta el número de frames que se tienen en keyFrameCarro
+int* frameIndexZapdosPtr = &frameIndexZapdos;  
+int i_curr_steps_Zapdos = 0;                    // Contador para recorrer cada fotograma entre keyframes
+int i_max_steps_Zapdos = 12;                    // Número de fotogramas entre keyframes
+
+bool playZapdos = false;   //Variable para dar inicio a la animación
+int  playIndexZapdos = 0;  //Variable para ir recorriendo cada keyFrame
+
+
+void saveFrame(FRAME KeyFrame[], int* FrameIndex, float posX, float posY, float posZ, float rot, string archivo)
 {
 	printf("FrameIndex = %d\n", FrameIndex);
 
 	// ---- Se guardan los datos del keyframe ----
 
-	KeyFrame[FrameIndex].posCarroX = posCarroX;
-	KeyFrame[FrameIndex].posCarroY = posCarroY;
-    KeyFrame[FrameIndex].posCarroZ = posCarroZ;
-	KeyFrame[FrameIndex].rotCarro  = rotCarro;
+	KeyFrame[*FrameIndex].posX = posX;
+	KeyFrame[*FrameIndex].posY = posY;
+    KeyFrame[*FrameIndex].posZ = posZ;
+	KeyFrame[*FrameIndex].rot  = rot;
 
-	FrameIndex++;   // Aumenta la cuenta global de KayFrames
+	(*FrameIndex)++;   // Aumenta la cuenta global de KeyFrames
 
 	// ---- Se guarda el KeyFrame en el archivo ----
 
 	ofstream file(archivo, ios::app);    // Se abre el archivo
-	file << posCarroX << 'f' << ' ' << posCarroY << 'f' << ' ' << posCarroZ << 'f' << ' ' << rotCarro << 'f' << endl;  // Se escriben los datos
+	file << posX << 'f' << ' ' << posY << 'f' << ' ' << posZ << 'f' << ' ' << rot << 'f' << endl;  // Se escriben los datos
 	file.close();  // Se cierra el archivo
 }
 
-void resetElements(void)
+void resetElements(FRAME KeyFrame[], float posX, float posY, float posZ, float rot)
 {
-	posCarroX = KeyFrame[0].posCarroX;
-	posCarroY = KeyFrame[0].posCarroY;
-    posCarroZ = KeyFrame[0].posCarroZ;
+	posX = KeyFrame[0].posX;
+	posY = KeyFrame[0].posY;
+    posZ = KeyFrame[0].posZ;
 
-	rotCarro = KeyFrame[0].rotCarro;
+	rot = KeyFrame[0].rot;
 }
 
-void interpolation(void)
+void interpolation(FRAME KeyFrame[], int PlayIndex, int i_max_steps)
 {
-	KeyFrame[playIndex].posCarroXInc = (KeyFrame[playIndex + 1].posCarroX - KeyFrame[playIndex].posCarroX) / i_max_steps;
-	KeyFrame[playIndex].posCarroYInc = (KeyFrame[playIndex + 1].posCarroY - KeyFrame[playIndex].posCarroY) / i_max_steps;
-    KeyFrame[playIndex].posCarroZInc = (KeyFrame[playIndex + 1].posCarroZ - KeyFrame[playIndex].posCarroZ) / i_max_steps;
+	KeyFrame[PlayIndex].posXInc = (KeyFrame[PlayIndex + 1].posX - KeyFrame[PlayIndex].posX) / i_max_steps;
+	KeyFrame[PlayIndex].posYInc = (KeyFrame[PlayIndex + 1].posY - KeyFrame[PlayIndex].posY) / i_max_steps;
+    KeyFrame[PlayIndex].posZInc = (KeyFrame[PlayIndex + 1].posZ - KeyFrame[PlayIndex].posZ) / i_max_steps;
 
-	KeyFrame[playIndex].rotCarroInc = (KeyFrame[playIndex + 1].rotCarro - KeyFrame[playIndex].rotCarro) / i_max_steps;
+	KeyFrame[PlayIndex].rotInc = (KeyFrame[PlayIndex + 1].rot - KeyFrame[PlayIndex].rot) / i_max_steps;
 }
 
-void LoadKeyFrames(string archivo) 
+void LoadKeyFrames(FRAME KeyFrame[], int *FrameIndex, string archivo) 
 {
 	ifstream file(archivo);  // Se abre el archivo
 
@@ -214,16 +248,16 @@ void LoadKeyFrames(string archivo)
 	// Se limpian todos los KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
 	{
-		KeyFrame[i].posCarroX = 0;
-		KeyFrame[i].posCarroY = 0;
-		KeyFrame[i].posCarroZ = 0;
+		KeyFrame[i].posX = 0;
+		KeyFrame[i].posY = 0;
+		KeyFrame[i].posZ = 0;
 
-		KeyFrame[i].posCarroXInc = 0;
-		KeyFrame[i].posCarroYInc = 0;
-		KeyFrame[i].posCarroZInc = 0;
+		KeyFrame[i].posXInc = 0;
+		KeyFrame[i].posYInc = 0;
+		KeyFrame[i].posZInc = 0;
 
-		KeyFrame[i].rotCarro = 0;
-		KeyFrame[i].rotCarroInc = 0;
+		KeyFrame[i].rot = 0;
+		KeyFrame[i].rotInc = 0;
 	}
 
 	//Variable para ir llenando los datos de cada KeyFrame
@@ -244,14 +278,14 @@ void LoadKeyFrames(string archivo)
 
 		if (file.good())
 		{
-			KeyFrame[frameActual].posCarroX = stof(posX);      //Cast de string a float
-			KeyFrame[frameActual].posCarroY = stof(posY);
-			KeyFrame[frameActual].posCarroZ = stof(posZ);
-			KeyFrame[frameActual].rotCarro = stof(rotacion);
+			KeyFrame[frameActual].posX = stof(posX);      //Cast de string a float
+			KeyFrame[frameActual].posY = stof(posY);
+			KeyFrame[frameActual].posZ = stof(posZ);
+			KeyFrame[frameActual].rot = stof(rotacion);
 
 			frameActual++;  //Aumenta el contador
 
-			FrameIndex++;   //Aumenta la cuenta global de KayFrames
+			(*FrameIndex)++;   //Aumenta la cuenta global de KayFrames
 		}
 	}
 
@@ -262,7 +296,7 @@ void LoadKeyFrames(string archivo)
 // ------------------ Variables para la iluminación ------------------
 
 // Coordenadas de Iluminación                    -- Luz tipo Posicional por Defecto --
-glm::vec3 lightPosition(20.0f, 70.0f, 35.0f);    //Posición de la Luz
+glm::vec3 lightPosition(-20.0f, 85.0f, 30.0f);   //Posición de la Luz
 glm::vec3 lightDirection(0.0f, 0.0f, -3.0f);     //Dirección de la Luz
 
 // Para controlar la intensidad de la luz
@@ -835,7 +869,7 @@ void animate(void)
 {
 	// --------------- Animación de la Montaña Rusa ---------------
 
-	if (play)
+	if (playCarro)
 	{
 		// Animación de las sillas 
 		if (giroSillaInversa)  //Giro en sentido horario
@@ -854,40 +888,111 @@ void animate(void)
 		}
 
 		// Animación del carro
-		if (i_curr_steps >= i_max_steps) //¿Fin de la animación entre cuadros (frames)?
+		if (i_curr_steps_Carro >= i_max_steps_Carro) //¿Fin de la animación entre cuadros (frames)?
 		{
-			playIndex++;
-			if (playIndex > FrameIndex - 2)	//¿Fin de toda la animación?
+			playIndexCarro++;
+			if (playIndexCarro > frameIndexCarro - 2)	//¿Fin de toda la animación?
 			{
 				printf("Termina la animacion\n");
-				playIndex = 0;
-				play = false;
+				playIndexCarro = 0;
+				playCarro = false;
 			}
 			else //Next frame interpolations
 			{
-				i_curr_steps = 0; //Se resetea el contador
-				interpolation();  //Interpolación
+				i_curr_steps_Carro = 0; //Se resetea el contador
+				interpolation(keyFrameCarro, playIndexCarro, i_max_steps_Carro);  //Interpolación
 			}
 		}
 		else
 		{
 			// Se dibuja la animación
-			posCarroX += KeyFrame[playIndex].posCarroXInc;
-			posCarroY += KeyFrame[playIndex].posCarroYInc;
-		    posCarroZ += KeyFrame[playIndex].posCarroZInc;
+			posCarroX += keyFrameCarro[playIndexCarro].posXInc;
+			posCarroY += keyFrameCarro[playIndexCarro].posYInc;
+		    posCarroZ += keyFrameCarro[playIndexCarro].posZInc;
 
-			rotCarro += KeyFrame[playIndex].rotCarroInc;
+			rotCarro += keyFrameCarro[playIndexCarro].rotInc;
 
-			i_curr_steps++;
+			i_curr_steps_Carro++;
 		}
 
-		printf("playIndex = %d\n", playIndex);
+		printf("playIndexCarro = %d\n", playIndexCarro);
 
 	}
+
 
 	// --------------- Animación de la Rueda de la Fortuna ---------------
 
 	giroRueda += 1.0f;  //Giro en sentido antihorario
+
+
+	// --------------- Animación de la Casa del Terror --------------- 
+
+	if (fantasmaMujerSube)
+	{
+		posMujerFantasmaY += 0.02f;
+
+		if (posMujerFantasmaY >= 2.0f)
+			fantasmaMujerSube = 0;
+	}
+	else
+	{
+		posMujerFantasmaY -= 0.02f;
+
+		if (posMujerFantasmaY <= 0.0f)
+			fantasmaMujerSube = 1;
+	}
+
+	if (fantasmaVuela)
+	{
+		posFantasmaX -= 0.1f;
+		posFantasmaZ += 0.1f;
+
+		if (posFantasmaZ >= 20.0f)
+			fantasmaVuela = 0;
+	}
+	else
+	{
+		posFantasmaX += 0.1f;
+		posFantasmaZ -= 0.1f;
+
+		if (posFantasmaZ <= 0.0f)
+			fantasmaVuela = 1;
+	}
+
+
+	// --------------- Animación del Zapdos ---------------
+
+	if (playZapdos)
+	{
+		if (i_curr_steps_Zapdos >= i_max_steps_Zapdos) //¿Fin de la animación entre cuadros (frames)?
+		{
+			playIndexZapdos++;
+			if (playIndexZapdos > frameIndexZapdos- 2)	//¿Fin de toda la animación?
+			{
+				printf("Termina la animacion\n");
+				playIndexZapdos = 0;
+				playZapdos = false;
+			}
+			else //Next frame interpolations
+			{
+				i_curr_steps_Zapdos = 0; //Se resetea el contador
+				interpolation(keyFrameZapdos, playIndexZapdos, i_max_steps_Zapdos);  //Interpolación
+			}
+		}
+		else
+		{
+			// Se dibuja la animación
+			posZapdosX += keyFrameZapdos[playIndexZapdos].posXInc;
+			posZapdosY += keyFrameZapdos[playIndexZapdos].posYInc;
+			posZapdosZ += keyFrameZapdos[playIndexZapdos].posZInc;
+
+			rotZapdos += keyFrameZapdos[playIndexZapdos].rotInc;
+
+			i_curr_steps_Zapdos++;
+		}
+
+		printf("playIndexZapdos = %d\n", playIndexZapdos);
+	}
 }
 
 void display(Shader modelShader, Model modelo[])
@@ -987,19 +1092,19 @@ void display(Shader modelShader, Model modelo[])
 
 	// ------------ Montaña Rusa ------------
 	glBindVertexArray(VAO);
-	model_loc = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, .0f));    //Rotación de la montaña rusa
-	model_loc = glm::translate(model_loc, glm::vec3(9.0f, 0.0f, 0.0f));                          //Ubicación de la montaña rusa
-	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));                              //Escala de toda la montaña
-	montañaRusa(model_loc, lightingShader, lampShader, modelShader, modelo[0]);                  //Se dibuja la montaña
+	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(55.0f, 0.0f, 0.0f));              //Ubicación de la montaña rusa
+	model_loc = glm::rotate(model_loc, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, .0f));    //Rotación de la montaña rusa
+	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));                        //Escala de toda la montaña
+	montañaRusa(model_loc, lightingShader, lampShader, modelShader, modelo[0]);            //Se dibuja la montaña
 
 
 	// ------------ Rueda de la Fortuna ------------
 	glBindVertexArray(VAO);
 	lightingShader.use();
-	model_loc = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));   //Rotación de la rueda de la fortuna
-	model_loc = glm::translate(model_loc, glm::vec3(-45.0f, 9.5f, 55.0f));                        //Ubicación de la rueda de la fortuna
-	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));                               //Escala de toda la rueda
-	ruedaDeLaFortuna(model_loc, lightingShader, lampShader);                                      //Se dibuja la rueda
+	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(-95.0f, 10.5f, 60.0f));           //Ubicación de la rueda de la fortuna
+	model_loc = glm::rotate(model_loc, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));   //Rotación de la rueda de la fortuna
+	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));                         //Escala de toda la rueda
+	ruedaDeLaFortuna(model_loc, lightingShader, lampShader);                                //Se dibuja la rueda
 
 
 	// ------------- Sol / Luna ---------------
@@ -1013,7 +1118,7 @@ void display(Shader modelShader, Model modelo[])
 		lampShader.setVec3("color", 1.00000f, 1.00000f, 0.79216f);  //Blanco (Luna)
 
 	model = glm::translate(glm::mat4(1.0f), lightPosition);
-	model = glm::scale(model, glm::vec3(1.5f));
+	model = glm::scale(model, glm::vec3(2.0f));
 	lampShader.setMat4("model", model);
 	esfera.render();       //Sol redondo
 
@@ -1027,70 +1132,119 @@ void display(Shader modelShader, Model modelo[])
 	model = glm::translate(model, glm::vec3(-20.0f, -16.0f, -20.0f));
 	model = glm::scale(model, glm::vec3(0.8f, 0.8f, 0.8f));
 	modelShader.setMat4("model", model);
-	modelShader.setMat4("view", view);
-	modelShader.setMat4("projection", projection);
 	modelo[1].Draw(modelShader);
+
+	
 
 	// ------------- Estadio Pokemon -------------
 	model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::translate(model, glm::vec3(70.0f, -70.0f, -14.0f));
-	model = glm::scale(model, glm::vec3(0.002f, 0.002f, 0.002f));
+	model = glm::scale(model, glm::vec3(0.002f));
 	modelShader.setMat4("model", model);
-	modelShader.setMat4("view", view);
-	modelShader.setMat4("projection", projection);
 	modelo[2].Draw(modelShader);
 
 	// ------------- Squirtle -------------
 	model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(-60.0f, 14.0f, -20.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	model = glm::translate(model, glm::vec3(-50.0f, 13.5f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.5f));
 	modelShader.setMat4("model", model);
-	modelShader.setMat4("view", view);
-	modelShader.setMat4("projection", projection);
 	modelo[3].Draw(modelShader);
 
 	// ------------- Charmander -------------
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-95.0f, -13.5f, -25.0f));
-	model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+	model = glm::translate(model, glm::vec3(-77.5f, -13.5f, -22.0f));
+	model = glm::scale(model, glm::vec3(1.5f));
 	modelShader.setMat4("model", model);
-	modelShader.setMat4("view", view);
-	modelShader.setMat4("projection", projection);
 	modelo[4].Draw(modelShader);
 
 	// ------------- Vaporeon ------------- 
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-65.0f, -13.5f, -25.0f));
-	model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+	model = glm::translate(model, glm::vec3(-62.5f, -13.5f, -25.0f));
+	model = glm::scale(model, glm::vec3(0.1f));
 	modelShader.setMat4("model", model);
-	modelShader.setMat4("view", view);
-	modelShader.setMat4("projection", projection);
 	modelo[5].Draw(modelShader);
 
 	// ------------- Pikachu ------------- 
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-75.0f, -13.5f, -5.0f));
-	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+	model = glm::translate(model, glm::vec3(-85.0f, -13.5f, -5.0f));
+	model = glm::scale(model, glm::vec3(0.075f));
 	modelShader.setMat4("model", model);
-	modelShader.setMat4("view", view);
-	modelShader.setMat4("projection", projection);
 	modelo[6].Draw(modelShader);	
 
 	// ------------- Zapdos -------------
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-65.0f, 20.0f, -25.0f));
-	model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
+	model = glm::translate(model, glm::vec3(-60.0f, 20.0f, -5.0f));
+	model = glm::translate(model, glm::vec3(posZapdosX, posZapdosY, posZapdosZ));
+	model = glm::rotate(model, glm::radians(rotZapdos), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.7f));
 	modelShader.setMat4("model", model);
-	modelShader.setMat4("view", view);
-	modelShader.setMat4("projection", projection);
 	modelo[7].Draw(modelShader);
 
-	// ------------- Casona -------------
-	model = glm::mat4(1.0f);
+	/**/
 
+	// ------------- Casa del Terror -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(42.5f, -13.5f, -80.0f));
+	model = glm::rotate(model, glm::radians(-235.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	modelShader.setMat4("model", model);
+	modelo[8].Draw(modelShader);
+
+	if (modoNoche)
+	{
+		// ------------- Mujer Fantasma -------------
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(19.0f, -10.5f, -80.0f));
+		model = glm::translate(model, glm::vec3(0.0f, posMujerFantasmaY, 0.0f));
+		model = glm::rotate(model, glm::radians(70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.1f));
+		modelShader.setMat4("model", model);
+		modelo[9].Draw(modelShader);
+
+		// ------------- Árbol Fantasma -------------
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(75.0f, -13.0f, -85.0f));
+		model = glm::translate(model, glm::vec3(posFantasmaX, 0.0f, posFantasmaZ));
+		model = glm::rotate(model, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(3.5f));
+		modelShader.setMat4("model", model);
+		modelo[10].Draw(modelShader);
+	}
+
+	// ------------- Pastos -------------
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(75.0f, -13.0f, -85.0f));
+	model = glm::rotate(model, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.1f));
+	modelShader.setMat4("model", model);
+	modelo[11].Draw(modelShader);
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(25.0f, -13.0f, -85.0f));
+	model = glm::rotate(model, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.1f));
+	modelShader.setMat4("model", model);
+	modelo[11].Draw(modelShader);
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(47.0f, -13.0f, -65.0f));
+	model = glm::rotate(model, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.1f));
+	modelShader.setMat4("model", model);
+	modelo[11].Draw(modelShader);
+
+	//---------------Castillo----------------------
+	model = glm::mat4(1.0f);
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(100.0f, -14.0f, -40.0f));
+	model = glm::scale(model, glm::vec3(0.8f));
+	modelShader.setMat4("model", model);
+	modelo[12].Draw(modelShader);
+
+	/*
 	//otro
 	//model = glm::mat4(1.0f);
 	//model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -1104,12 +1258,8 @@ void display(Shader modelShader, Model modelo[])
 	//model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
 	//model = glm::scale(model, glm::vec3(0.002f, 0.002f, 0.002f));
 	modelShader.setMat4("model", model);
-	modelShader.setMat4("view", view);
-	modelShader.setMat4("projection", projection);
 	modelo[8].Draw(modelShader);
-
-
-
+	*/
 
 
 
@@ -1173,13 +1323,18 @@ int main()
 	Model Zapdos((char *)"Models/Zapdos/zapados-pokemon-go.obj", 1);
 	Model Casona((char *)"Models/CASONAOPCIONES/Cabania/farmhouse_obj.obj", 1);
 	//Model Casona((char *)"Models/CASONAOPCIONES/WoodenCabin/WoodenCabinObj.obj", 1);
+	Model womanGhost((char *)"Models/CASONAOPCIONES/womanGhost/skghostmesh.obj", 1);
+	Model treeGhost((char *)"Models/CASONAOPCIONES/Tree Ghost/Tree Ghost.obj", 0);
+	Model Castillo((char *)"Models/Castillo/Castle OBJ.obj", 1);
+	Model pasto1((char *)"Models/CASONAOPCIONES/pasto1/Grass.obj", 1);
+	
 
 	//Se guardan todos los modelos en un arreglo
-	Model modelo[] = {batarang, pasto, estadioPokemon, Squirtle, Charmander, Vaporeon, Pikachu, Zapdos, Casona};
-
+	Model modelo[] = {batarang, pasto, estadioPokemon, Squirtle, Charmander, Vaporeon, Pikachu, Zapdos, Casona, womanGhost, treeGhost, pasto1, Castillo };
 
 	// Inicialización de KeyFrames
-	LoadKeyFrames("KeyFramesCarro.txt");
+	LoadKeyFrames(keyFrameCarro, frameIndexCarroPtr, "KeyFramesCarro.txt");
+	LoadKeyFrames(keyFrameZapdos, frameIndexZapdosPtr, "KeyFramesZapdos.txt");
 
     // render loop
     // While the windows is not closed
@@ -1228,46 +1383,80 @@ void my_input(GLFWwindow *window)
 
 	// Movimiento de la cámara
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, (float)deltaTime * 5);
+		camera.ProcessKeyboard(FORWARD, (float)deltaTime * 15);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, (float)deltaTime * 5);
+		camera.ProcessKeyboard(BACKWARD, (float)deltaTime * 15);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, (float)deltaTime * 5);
+		camera.ProcessKeyboard(LEFT, (float)deltaTime * 15);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, (float)deltaTime * 5);
+		camera.ProcessKeyboard(RIGHT, (float)deltaTime * 15);
 
 	// --------------- Animación por keyframes ---------------
 
 	// Movimiento 
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		posCarroX -= 0.1f;
+	{
+		posCarroX  -= 0.1f;
+		posZapdosX -= 0.1f;
+	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		posCarroX += 0.1f;
+	{
+		posCarroX  += 0.1f;
+		posZapdosX += 0.1f;
+	}
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
 		posCarroY -= 0.1f;
+		posZapdosY -= 0.1f;
+	}	
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
 		posCarroY += 0.1f;
+		posZapdosY += 0.1f;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
+	{
+		posZapdosZ -= 0.1f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS)
+	{
+		posZapdosZ += 0.1f;
+	}
 
 	// Rotación de la Rodilla Izquierda
 	if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
+	{
 		rotCarro--;
+		rotZapdos--;
+	}
 	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
+	{
 		rotCarro++;
+		rotZapdos++;
+	}
 
 	// Para iniciar la animación de la montaña rusa
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && (PPresionado == 0))
 	{
-		if (play == false && (FrameIndex > 1))
+		if (playCarro == false && (frameIndexCarro > 1))
 		{
-			resetElements();
-			interpolation(); //Primer Interpolation	
+			//resetElements(keyFrameCarro, posCarroX, posCarroY, posCarroZ, rotCarro);
 
-			play = true;
-			playIndex = 0;
-			i_curr_steps = 0;
+			//Se resetean los elementos
+			posCarroX = keyFrameCarro[0].posX;
+			posCarroY = keyFrameCarro[0].posY;
+			posCarroZ = keyFrameCarro[0].posZ;
+			rotCarro = keyFrameCarro[0].rot;
+
+			interpolation(keyFrameCarro, playIndexCarro, i_max_steps_Carro); //Primer Interpolation	
+
+			playCarro = true;
+			playIndexCarro = 0;
+			i_curr_steps_Carro = 0;
 		}
 		else
-			play = false;
+			playCarro = false;
 
 		PPresionado = 1;   //La tecla ya está presionada
 	}
@@ -1277,13 +1466,52 @@ void my_input(GLFWwindow *window)
 	// Para guardar el keyframe del carro de la montaña rusa
 	if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS && (F1Presionado == 0))
 	{
-		if (FrameIndex < MAX_FRAMES)
-			saveFrame("KeyFramesCarro.txt");
+		if (frameIndexCarro < MAX_FRAMES)
+			saveFrame(keyFrameCarro, frameIndexCarroPtr, posCarroX, posCarroY, posCarroZ, rotCarro, "KeyFramesCarro.txt");
 
 		F1Presionado = 1;   //La tecla ya está presionada
 	}
 	if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_RELEASE)
 		F1Presionado = 0;
+
+
+	// Para iniciar la animación del zapdos
+	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS && (OPresionado == 0))
+	{
+		if (playZapdos == false && (frameIndexZapdos > 1))
+		{
+			//resetElements(keyFrameZapdos, posZapdosX, posZapdosY, posZapdosZ, rotZapdos);}
+
+			//Se resetean los elementos
+			posZapdosX = keyFrameZapdos[0].posX;
+			posZapdosY = keyFrameZapdos[0].posY;
+			posZapdosZ = keyFrameZapdos[0].posZ;
+			rotZapdos = keyFrameZapdos[0].rot;
+
+			interpolation(keyFrameZapdos, playIndexZapdos, i_max_steps_Zapdos); //Primer Interpolation	
+
+			playZapdos= true;
+			playIndexZapdos = 0;
+			i_curr_steps_Zapdos = 0;
+		}
+		else
+			playZapdos = false;
+
+		OPresionado = 1;   //La tecla ya está presionada
+	}
+	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_RELEASE)
+		OPresionado = 0;
+
+	// Para guardar el keyframe del zapdos
+	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS && (F2Presionado == 0))
+	{
+		if (frameIndexCarro < MAX_FRAMES)
+			saveFrame(keyFrameZapdos, frameIndexZapdosPtr, posZapdosX, posZapdosY, posZapdosZ, rotZapdos, "KeyFramesZapdos.txt");
+
+		F2Presionado = 1;   //La tecla ya está presionada
+	}
+	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_RELEASE)
+		F2Presionado = 0;
 
 
 	// --------------- Tipo de Iluminación ---------------
@@ -1294,7 +1522,7 @@ void my_input(GLFWwindow *window)
 		strcpy_s(Light_VertxShader, "shaders/shader_texture_light_pos.vs");
 		strcpy_s(Light_FragShader, "shaders/shader_texture_light_pos.fs");
 
-		Light_Position = lightPosition = glm::vec3(20.0f, 70.0f, 35.0f);
+		Light_Position = lightPosition = glm::vec3(-20.0f, 85.0f, 30.0f);
 
 		Luz_Reflector = 0;  //La luz ya no es de tipo reflector
 
@@ -1319,7 +1547,7 @@ void my_input(GLFWwindow *window)
 		strcpy_s(Light_VertxShader, "shaders/shader_texture_light_pos.vs");
 		strcpy_s(Light_FragShader, "shaders/shader_texture_light_pos.fs");
 
-		Light_Position = lightPosition = glm::vec3(65.0f, 60.0f, 30.0f);
+		Light_Position = lightPosition = glm::vec3(120.0f, 90.0f, 30.0f);
 
 		Luz_Reflector = 0;  //La luz ya no es de tipo reflector
 
@@ -1344,7 +1572,7 @@ void my_input(GLFWwindow *window)
 		strcpy_s(Light_VertxShader, "shaders/shader_texture_light_pos.vs");
 		strcpy_s(Light_FragShader, "shaders/shader_texture_light_pos.fs");
 
-		Light_Position = lightPosition = glm::vec3(-25.0f, 60.0f, 30.0f);
+		Light_Position = lightPosition = glm::vec3(-160.0f, 90.0f, 30.0f);
 
 		Luz_Reflector = 0;  //La luz ya no es de tipo reflector
 
@@ -1538,7 +1766,7 @@ void montañaRusa(glm::mat4 model_loc, Shader lightingShader, Shader lampShader, 
 	glm::mat4 model;                   //Matriz para ir dibujando cada elemento
 	glm::mat4 temp = glm::mat4(1.0f);  //Matriz auxiliar
 
-	Shader shader("", "");   //Shader vacío para elegir entre cuál utilizar
+	Shader shader("shaders/shader_lamp.vs", "shaders/shader_lamp.fs");   //Shader vacío para elegir entre cuál utilizar
 
 
 	//  ------------- Rieles -------------
@@ -2829,7 +3057,7 @@ void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader, Shader lampSha
 
 	//  ------------- Estructura Circular -------------
 	
-	Shader shader("","");   //Shader vacío para elegir entre cuál utilizar
+	Shader shader("shaders/shader_lamp.vs", "shaders/shader_lamp.fs");   //Shader vacío para elegir entre cuál utilizar
 
 	// Modo de iluminación
 	if (modoNoche)

@@ -1,0 +1,29 @@
+# Material file for arcanine.obj
+
+newmtl mat_0_windie_0_0.tga
+	Ns 96
+	d 1
+	illum 2
+	Kd 1.0 1.0 1.0
+	Ks 0.5 0.5 0.5
+	Ka 0.0 0.0 0.0
+	map_Kd windie_0_0.png
+
+newmtl mat_2_windie_0_2.tga
+	Ns 96
+	d 1
+	illum 2
+	Kd 1.0 1.0 1.0
+	Ks 0.5 0.5 0.5
+	Ka 0.0 0.0 0.0
+	map_Kd windie_0_2.png
+
+newmtl mat_1_windie_0_1.tga
+	Ns 96
+	d 1
+	illum 2
+	Kd 1.0 1.0 1.0
+	Ks 0.5 0.5 0.5
+	Ka 0.0 0.0 0.0
+	map_Kd windie_0_1.png
+

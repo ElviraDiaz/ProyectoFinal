@@ -1,4 +1,5 @@
 ﻿  Proyecto.cpp
-c:\users\adan\desktop\montaña rusa\project1\project1\proyecto.cpp(1413): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-c:\users\adan\desktop\montaña rusa\project1\project1\proyecto.cpp(1420): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+c:\users\adan\desktop\montaña rusa\project1\project1\proyecto.cpp(205): warning C4477: 'printf' : la cadena de formato '%d' requiere un argumento de tipo 'int', pero el argumento variádico 1 tiene el tipo 'int *'
+c:\users\adan\desktop\montaña rusa\project1\project1\proyecto.cpp(1751): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+c:\users\adan\desktop\montaña rusa\project1\project1\proyecto.cpp(1758): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
   Project1.vcxproj -> C:\Users\Adan\Desktop\Montaña Rusa\Project1\Debug\Project1.exe
