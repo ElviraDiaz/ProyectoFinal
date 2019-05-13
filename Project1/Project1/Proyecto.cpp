@@ -85,7 +85,7 @@ void riel(glm::mat4 model_loc, float escala_x, float rotacion, Shader lightingSh
 void carro(glm::mat4 model_loc, Shader lightingShader);
 void silla(glm::mat4 model_loc, int lado, int seguridad, Shader lightingShader);
 
-void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader);
+void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader, Shader lampShader);
 void cupula(glm::mat4 model_loc, Shader lightingShader);
 void anillo(glm::mat4 model_loc, Shader lightingShader);
 
@@ -922,6 +922,15 @@ void display(Shader modelShader, Model batarang)
 	modelShader.setMat4("view", view);
 	modelShader.setMat4("projection", projection);
 
+	//Se abre el shader de focos de luz y se habilita
+	Shader lampShader("shaders/shader_lamp.vs", "shaders/shader_lamp.fs");  
+	lampShader.use();
+
+	// Se pasan las matrices al shader de focos de luz
+	lampShader.setMat4("model", model);
+	lampShader.setMat4("view", view);
+	lampShader.setMat4("projection", projection);
+
 
 	//Shader projectionShader("shaders/shader_light.vs", "shaders/shader_light.fs");
 	//Shader projectionShader("shaders/shader_texture_color.vs", "shaders/shader_texture_color.fs");
@@ -933,7 +942,6 @@ void display(Shader modelShader, Model batarang)
 	//Shader lightingShader("shaders/shader_texture_light_spot.vs", "shaders/shader_texture_light_spot.fs");  //Spotlight
 
 	Shader lightingShader(Light_VertxShader, Light_FragShader);             //Light_VertxShader y Light_FragShader son variables que pueden tener cualquiera de las rutas anteriores
-	Shader lampShader("shaders/shader_lamp.vs", "shaders/shader_lamp.fs");  //Se abre el shader de lámpara
 
 	//Se habilita el Shader de iluminación
 	lightingShader.use();
@@ -989,33 +997,22 @@ void display(Shader modelShader, Model batarang)
 
 	// ------------ Montaña Rusa ------------
 	glBindVertexArray(VAO);
-	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)); //Ubicación de la montaña rusa
-	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));           //Escala de toda la montaña
-	montañaRusa(model_loc, lightingShader, modelShader, batarang);            //Se dibuja la montaña
+	model_loc = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, .0f));    //Rotación de la montaña rusa
+	model_loc = glm::translate(model_loc, glm::vec3(0.0f, 0.0f, 0.0f));                          //Ubicación de la montaña rusa
+	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));                              //Escala de toda la montaña
+	montañaRusa(model_loc, lightingShader, modelShader, batarang);                               //Se dibuja la montaña
 
 	
 	// ------------ Rueda de la Fortuna ------------
 	glBindVertexArray(VAO);
 	lightingShader.use();
-	model_loc = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 10.0f, -1.5f));  //Ubicación de la rueda de la fortuna
-	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));               //Escala de toda la rueda
-	ruedaDeLaFortuna(model_loc, lightingShader);                                  //Se dibuja la rueda
-
-	/*
-	// Wea
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(35.0f, 12.5f, -5.0f));
-	model = glm::scale(model, glm::vec3(2.9f, 1.25f, 2.9f));
-	lightingShader.setMat4("model", model);
-	lightingShader.setInt("material_diffuse", t_azul);
-	lightingShader.setInt("material_specular", t_azul_brillo);
-	esfera.render();
-	*/
+	model_loc = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));    //Rotación de la rueda de la fortuna
+	model_loc = glm::translate(model_loc, glm::vec3(50.0f, 10.5f, -1.5f));                        //Ubicación de la rueda de la fortuna
+	model_loc = glm::scale(model_loc, glm::vec3(1.0f, 1.0f, 1.0f));                               //Escala de toda la rueda
+	ruedaDeLaFortuna(model_loc, lightingShader, lampShader);                                      //Se dibuja la rueda
 
 	// ------------- Sol ---------------
 	lampShader.use();
-	lampShader.setMat4("view", view);
-	lampShader.setMat4("projection", projection);
-
 	model = glm::translate(glm::mat4(1.0f), lightPosition);
 	model = glm::scale(model, glm::vec3(1.5f));
 	lampShader.setMat4("model", model);
@@ -1067,11 +1064,11 @@ int main()
 	esfera.init();
 	glEnable(GL_DEPTH_TEST);
 
-	// Se crea el chader para cargar los modelos
+	// Se crea el shader para cargar los modelos
 	Shader modelShader("Shaders/modelLoading.vs", "Shaders/modelLoading.fs");
-	
+
 	// Se cargan los modelos a utilizar
-	Model batarang = ((char *)"Models/Batarang/INJ_iOS_WEAPON_Batman's_Batarang_Dawn_Of_Justice.obj");
+	Model batarang((GLchar *)"Models/Batarang/INJ_iOS_WEAPON_Batman's_Batarang_Dawn_Of_Justice.obj", 0);
 
 
 	// Inicialización de KeyFrames
@@ -2695,7 +2692,7 @@ void silla(glm::mat4 model_loc, int lado, int seguridad, Shader lightingShader)
 	}
 }
 
-void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader)
+void ruedaDeLaFortuna(glm::mat4 model_loc, Shader lightingShader, Shader lampShader)
 {
 	glm::mat4 model;  //Matriz para ir dibujando cada elemento
 

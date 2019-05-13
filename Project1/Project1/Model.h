@@ -28,9 +28,9 @@ class Model
 public:
 	/*  Functions   */
 	// Constructor, expects a filepath to a 3D model.
-	Model(GLchar *path)
+	Model(GLchar *path, int theresNormal)
 	{
-		this->loadModel(path);
+		this->loadModel(path, theresNormal);
 	}
 
 	// Draws the model, and thus all its meshes
@@ -50,7 +50,7 @@ private:
 
 										/*  Functions   */
 										// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
-	void loadModel(string path)
+	void loadModel(string path, int theresNormal)
 	{
 		// Read file via ASSIMP
 		Assimp::Importer importer;
@@ -66,11 +66,11 @@ private:
 		this->directory = path.substr(0, path.find_last_of('/'));
 
 		// Process ASSIMP's root node recursively
-		this->processNode(scene->mRootNode, scene);
+		this->processNode(scene->mRootNode, scene, theresNormal);
 	}
 
 	// Processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
-	void processNode(aiNode* node, const aiScene* scene)
+	void processNode(aiNode* node, const aiScene* scene, int theresNormal)
 	{
 		// Process each mesh located at the current node
 		for (GLuint i = 0; i < node->mNumMeshes; i++)
@@ -79,17 +79,17 @@ private:
 			// The scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-			this->meshes.push_back(this->processMesh(mesh, scene));
+			this->meshes.push_back(this->processMesh(mesh, scene, theresNormal));
 		}
 
 		// After we've processed all of the meshes (if any) we then recursively process each of the children nodes
 		for (GLuint i = 0; i < node->mNumChildren; i++)
 		{
-			this->processNode(node->mChildren[i], scene);
+			this->processNode(node->mChildren[i], scene, theresNormal);
 		}
 	}
 
-	Mesh processMesh(aiMesh *mesh, const aiScene *scene)
+	Mesh processMesh(aiMesh *mesh, const aiScene *scene, int theresNormal)
 	{
 		// Data to fill
 		vector<Vertex> vertices;
@@ -108,13 +108,14 @@ private:
 			vector.z = mesh->mVertices[i].z;
 			vertex.Position = vector;
 
-			/*
 			// Normals
-			vector.x = mesh->mNormals[i].x;
-			vector.y = mesh->mNormals[i].y;
-			vector.z = mesh->mNormals[i].z;
-			vertex.Normal = vector;
-			*/
+			if(theresNormal)
+			{
+				vector.x = mesh->mNormals[i].x;
+				vector.y = mesh->mNormals[i].y;
+				vector.z = mesh->mNormals[i].z;
+				vertex.Normal = vector;
+			}
 
 			// Texture Coordinates
 			if (mesh->mTextureCoords[0]) // Does the mesh contain texture coordinates?

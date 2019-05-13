@@ -99,7 +99,7 @@ void Esfera::render()
 	glEnable(GL_LIGHT0);
 
 	glBindVertexArray(esfera_VAO[0]);
-	//  glDrawArrays(GL_POINTS,0,sizeof(esfera_pos)/sizeof(GLfloat));                   // POINTS ... no indices for debug
+	//  glDrawArrays(GL_POINTS,0,sizeof(esfera_pos)/sizeof(GLfloat));                           // POINTS ... no indices for debug
 	glDrawElements(GL_TRIANGLES, sizeof(esfera_index) / sizeof(GLuint), GL_UNSIGNED_INT, 0);    // indices (choose just one line not both !!!)
 	glBindVertexArray(0);
 }
